@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="gameApp">
+<head>
+    <title>Centipede</title>
+</head>
+<body>
+    <div ng-controller="ScoreBoardController">
+        <div>{{score}}</div>
+        <div>{{highScore}}</div>
+        <button ng-click="IncrementScore(20)">Click</button>
+    </div>
+
+    <div>
+        <canvas id="gameCanvas" width="500" height="500" style="border:1px solid #000000;"></canvas>
+    </div>
+    <script src="lib/angular.js"></script>
+    <script src="gameApp.js"></script>
+    <script src="controllers/ScoreBoardController.js"></script>
+</body>
+</html>
