@@ -3,18 +3,26 @@
 <head>
     <title>Centipede</title>
 </head>
-<body>
-    <div ng-controller="ScoreBoardController">
-        <div>{{score}}</div>
-        <div>{{highScore}}</div>
-        <button ng-click="IncrementScore(20)">Click</button>
-    </div>
-
+<body ng-controller="AppController" ng-keydown="keydown($event)">
     <div>
-        <canvas id="gameCanvas" width="500" height="500" style="border:1px solid #000000;"></canvas>
+        <div ng-controller="ScoreBoardController">  {{ keyPress }}
+            <div>{{score}}</div>
+            <div>{{highScore}}</div>
+            <button ng-click="IncrementScore(20)">Click</button>
+            <div>
+                <div>
+                    <canvas id="gameCanvas" game-engine width="500" height="500" style="border:1px solid #000000;"></canvas>
+                </div>
+            </div>
+        </div>
     </div>
     <script src="lib/angular.js"></script>
+    <script src="lib/ui-bootstrap.js"></script>
     <script src="gameApp.js"></script>
-    <script src="controllers/ScoreBoardController.js"></script>
+    <script src="js/GameEngine.js"></script>
+    <script src="js/directives/GameKeyPressDirective.js"></script>
+    <script src="js/directives/GameEngineDirective.js"></script>
+    <script src="js/controllers/AppController.js"></script>
+    <script src="js/controllers/ScoreBoardController.js"></script>
 </body>
 </html>
