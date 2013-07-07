@@ -1,6 +1,6 @@
 'use strict';
 
-gameApp.directive('gameEngine', function($timeout) {
+gameApp.directive('gameEngine', function($timeout, GameEngine) {
     return {
         restrict: 'E',
         template: '<canvas id="gameCanvas" width="500" height="500" style="border:1px solid #000000;"></canvas>',
@@ -10,13 +10,14 @@ gameApp.directive('gameEngine', function($timeout) {
         },
         link: function(scope, element, attrs, controller) {
             var date = new Date();
-            var gameEngine = new GameEngine(element.find('canvas')[0], 'img/graphics.png');
+            // var gameEngine = new GameEngine(element.find('canvas')[0].getContext("2d"), 'img/graphics.png');
+            GameEngine.initialise(element.find('canvas')[0].getContext("2d"), 'img/graphics.png');
 
             function gameLoop() {
                 var nextTick = date.getTime() + 125;
 
                 var currentKey =  scope.keyPressList && scope.keyPressList.length > 0 ? scope.keyPressList[0] : null;
-                gameEngine.update(currentKey);
+                GameEngine.update(currentKey);
 
                 if (currentKey != null) {
                     scope.score += 10;
