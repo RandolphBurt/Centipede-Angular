@@ -3,15 +3,15 @@
 gameApp.directive('gameEngine', function($timeout, GameEngine) {
     return {
         restrict: 'E',
-        template: '<canvas id="gameCanvas" width="500" height="500" style="border:1px solid #000000;"></canvas>',
+        template: '<canvas id="gameCanvas" width="600" height="600" style="border:1px solid #000000;"></canvas>',
         scope: {
             score: '=',
             keyPressList: '='
         },
         link: function(scope, element, attrs, controller) {
             var date = new Date();
-            // var gameEngine = new GameEngine(element.find('canvas')[0].getContext("2d"), 'img/graphics.png');
-            GameEngine.initialise(element.find('canvas')[0].getContext("2d"), 'img/graphics.png');
+            var canvas = element.find('canvas')[0].getContext("2d");
+            GameEngine.initialise(canvas, 'img/graphics.png', { width: 30, height: 30, scale: 1 });
 
             function gameLoop() {
                 var nextTick = date.getTime() + 125;

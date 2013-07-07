@@ -1,23 +1,34 @@
-gameApp.factory('GameEngine', function() {
+"use strict";
+
+
+gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings) {
+    var GameStateEnum = {
+        StartMove: 0,
+        AnimateFrame1 : 1,
+        AnimateFrame2 : 2,
+        AnimateFrame3 : 3
+    };
+
     return {
+        initialise: function(canvas, graphicsFile, gameBoardSize) {
+            GraphicsEngine.initialise(canvas, graphicsFile, gameBoardSize.scale);
+            GameBoard.initialise(gameBoardSize.width, gameBoardSize.height);
+            this.canvasWidth = gameBoardSize.width * gameBoardSize.scale * GlobalSettings.spriteSize;
+            this.canvasHeight = gameBoardSize.height * gameBoardSize.scale * GlobalSettings.spriteSize;
+            this.canvas = canvas;
 
-        initialise: function(canvasContext, graphicsFile) {
-            this.canvas = canvasContext;
-            this.spriteSheet = new Image();
-            this.spriteSheet.src = graphicsFile;
-
+            this.gameState = GameStateEnum.StartMove;
             this.gameTimer = 0;
-            this.currentColour = 0;
-            this.colors = ["#FF0000", "#00FF00", "#0000FF"];
+            this.currentImage = 0;
         },
 
         update: function(currentKeyPress){
             this.gameTimer++;
 
             if (currentKeyPress === 37) {
-                this.currentColour++;
-                if (this.currentColour == 3) {
-                    this.currentColour = 0;
+                this.currentImage++;
+                if (this.currentImage == 53) {
+                    this.currentImage = 0;
                 }
             }
 
@@ -25,9 +36,12 @@ gameApp.factory('GameEngine', function() {
                 console.log(new Date().getTime() / 1000);
             }
 
-            this.canvas.fillStyle=this.colors[this.currentColour];
-            this.canvas.fillRect(0,0,150,75);
-            this.canvas.drawImage(this.spriteSheet, 0, 0, 20, 20, 100, 100, 20,20);
+            this.canvas.fillStyle = 'black';
+            this.canvas.fillRect(0 ,0,  this.canvasWidth, this.canvasHeight);
+            GameBoard.draw();
+
+            GraphicsEngine.drawImage(8, 5, this.currentImage);
         }
     }
+
 });
