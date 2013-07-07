@@ -2,25 +2,32 @@
 
 gameApp.directive('gameEngine', function($timeout) {
     return {
-        restrict: 'A',
+        restrict: 'E',
+        template: '<canvas id="gameCanvas" width="500" height="500" style="border:1px solid #000000;"></canvas>',
+        scope: {
+            score: '=',
+            keyPressList: '='
+        },
         link: function(scope, element, attrs, controller) {
             var date = new Date();
-            var gameEngine = new GameEngine(element[0], 'img/graphics.png');
+            var gameEngine = new GameEngine(element.find('canvas')[0], 'img/graphics.png');
 
             function gameLoop() {
                 var nextTick = date.getTime() + 125;
 
-                var currentKey =  scope.keyPress && scope.keyPress.length > 0 ? scope.keyPress[0] : null;
+                var currentKey =  scope.keyPressList && scope.keyPressList.length > 0 ? scope.keyPressList[0] : null;
                 gameEngine.update(currentKey);
 
                 if (currentKey != null) {
-                    scope.keyPress.length = 0;
+                    scope.score += 10;
+                    scope.keyPressList.length = 0;
                 }
 
                 $timeout(gameLoop, Math.max(0, nextTick - date.getTime()));
             }
 
             gameLoop();
+
         }
     }
 

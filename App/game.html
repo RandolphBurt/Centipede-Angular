@@ -5,13 +5,13 @@
 </head>
 <body ng-controller="AppController" ng-keydown="keydown($event)">
     <div>
-        <div ng-controller="ScoreBoardController">  {{ keyPress }}
-            <div>{{score}}</div>
-            <div>{{highScore}}</div>
+        <div ng-controller="ScoreBoardController">  {{ KeyPressList }}
+            <div>{{GameScore}}</div>
+            <div>{{HighScore}}</div>
             <button ng-click="IncrementScore(20)">Click</button>
             <div>
                 <div>
-                    <canvas id="gameCanvas" game-engine width="500" height="500" style="border:1px solid #000000;"></canvas>
+                    <game-engine score="GameScore" key-press-list="KeyPressList"/>
                 </div>
             </div>
         </div>

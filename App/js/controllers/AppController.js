@@ -2,9 +2,9 @@
 
 gameApp.controller('AppController', function($scope) {
     $scope.keydown = function(keyEvent) {
-        if (!$scope.keyPress) {
-            $scope.keyPress = [];
+        if (!$scope.KeyPressList) {
+            $scope.KeyPressList = [];
         }
-        $scope.keyPress.push(keyEvent.keyCode);
+        $scope.KeyPressList.push(keyEvent.keyCode);
      }
 });

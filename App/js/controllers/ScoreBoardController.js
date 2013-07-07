@@ -1,15 +1,15 @@
 'use strict';
 
 gameApp.controller('ScoreBoardController', function ScoreBoardController($scope) {
-    $scope.score = 0;
+    $scope.GameScore = 0;
 
-    $scope.highScore = 120;
+    $scope.HighScore = 120;
 
     $scope.IncrementScore = function(increment) {
-        $scope.score += increment;
+        $scope.GameScore += increment;
 
-        if ($scope.score > $scope.highScore) {
-            $scope.highScore = $scope.score;
+        if ($scope.GameScore > $scope.HighScore) {
+            $scope.HighScore = $scope.GameScore;
         }
     }
 });
