@@ -30,6 +30,36 @@ gameApp.factory("GameBoard", function(GlobalSettings, Utils, GraphicsEngine) {
             this.map[y][x] = 4;
         },
 
+        playerAllowedToMove: function(currentX, currentY, direction) {
+            var x = currentX;
+            var y = currentY;
+
+            switch (direction) {
+                case DirectionEnum.Down:
+                    y += 1;
+                    break;
+                case DirectionEnum.Up:
+                    y -= 1;
+                    break;
+                case DirectionEnum.Right:
+                    x += 1;
+                    break;
+                case DirectionEnum.Left:
+                    x -= 1;
+                    break;
+            }
+
+            if (x >= this.width || x < 0 || y >= this.height || y < 0 || !inPlayerArea(y, this.height)) {
+                return false;
+            }
+
+            return this.map[y][x] == 0;
+        },
+
+        checkCollision: function(x, y) {
+            return this.map[y][x] == 0;
+        },
+
         draw: function() {
             for (var h = 0; h < this.height; h++) {
                 for (var w = 0; w < this.width; w++) {

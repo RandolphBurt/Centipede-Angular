@@ -1,7 +1,7 @@
 "use strict";
 
 
-gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings) {
+gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings, Utils) {
     return {
         initialise: function(canvas, graphicsFile, gameBoardSize) {
             GraphicsEngine.initialise(canvas, graphicsFile, gameBoardSize.scale);
@@ -12,20 +12,16 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
             this.canvas = canvas;
 
             this.player = new Player(Math.floor(gameBoardSize.width / 2), gameBoardSize.height - 1);
-
-
-            this.animation = 0;
         },
 
-        update: function(currentKeyPress){
-            this.animation++;
+        update: function(animation, keyPressList) {
+            if (animation == 0) {
+                var playerMove = ParseKeyPress(keyPressList);
 
-            if (this.animation == 4) {
-                this.animation = 0;
-            }
+                if (playerMove.direction != DirectionEnum.None && !GameBoard.playerAllowedToMove(this.player.x, this.player.y, playerMove.direction)) {
+                    playerMove.direction = DirectionEnum.None;
+                }
 
-            if (this.animation == 0) {
-                var playerMove = ParseKeyPress(currentKeyPress);
                 this.player.move(playerMove.direction, playerMove.isFiring);
             }
 
@@ -33,16 +29,19 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
             this.canvas.fillRect(0 ,0,  this.canvasWidth, this.canvasHeight);
             GameBoard.draw();
 
-            var playerData = this.player.calculateAnimation(this.animation);
+            var playerData = this.player.calculateAnimation(animation);
 
             GraphicsEngine.drawImage(playerData.x, playerData.y, playerData.image);
         }
     }
 
-    function ParseKeyPress (currentKeyPress) {
+    function ParseKeyPress (keyPressList) {
         var direction = DirectionEnum.None;
 
-        switch (currentKeyPress) {
+        var movementKey = Utils.arrayFirstNonMatchingValue(keyPressList, 32);
+        var isFiring = Utils.arrayContains(keyPressList, 32);
+
+        switch (movementKey) {
             case 37: //left
                 direction = DirectionEnum.Left;
                 break;
@@ -58,13 +57,11 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
             case 40: //down
                 direction = DirectionEnum.Down;
                 break;
-
-            case 32: //space
         }
 
         return {
             direction: direction,
-            isFiring: false
+            isFiring: isFiring
         }
     }
 });

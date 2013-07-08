@@ -9,6 +9,7 @@ gameApp.directive('gameEngine', function($timeout, GameEngine) {
             keyPressList: '='
         },
         link: function(scope, element, attrs, controller) {
+            var animation = 0;
             var date = new Date();
             var canvas = element.find('canvas')[0].getContext("2d");
             GameEngine.initialise(canvas, 'img/graphics.png', { width: 30, height: 30, scale: 1 });
@@ -16,11 +17,15 @@ gameApp.directive('gameEngine', function($timeout, GameEngine) {
             function gameLoop() {
                 var nextTick = date.getTime() + 30;
 
-                var currentKey =  scope.keyPressList && scope.keyPressList.length > 0 ? scope.keyPressList[0] : null;
-                GameEngine.update(currentKey);
+                animation++;
 
-                if (currentKey != null) {
-                    scope.score += 10;
+                if (animation == 4) {
+                    animation = 0;
+                }
+
+                GameEngine.update(animation, scope.keyPressList);
+
+                if (animation == 0 && scope.keyPressList) {
                     scope.keyPressList.length = 0;
                 }
 
