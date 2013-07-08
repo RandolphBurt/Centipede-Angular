@@ -3,29 +3,28 @@
 <head>
     <title>Centipede</title>
 </head>
-<body ng-controller="AppController" ng-keydown="keydown($event)">
-    <div>
+<body ng-controller="AppController" ng-keydown="keydown($event)"  style="background-color:black">
+    <div style="color: red">
         <div ng-controller="ScoreBoardController">  {{ KeyPressList }}
             <div>{{GameScore}}</div>
             <div>{{HighScore}}</div>
             <button ng-click="IncrementScore(20)">Click</button>
             <div>
-                <div>
-                    <game-engine score="GameScore" key-press-list="KeyPressList"/>
-                </div>
+                <game-engine score="GameScore" key-press-list="KeyPressList"/>
             </div>
         </div>
     </div>
     <script src="lib/angular.js"></script>
     <script src="lib/ui-bootstrap.js"></script>
     <script src="gameApp.js"></script>
+    <script src="js/DirectionEnum.js"></script>
     <script src="js/SpriteEnum.js"></script>
+    <script src="js/characters/Player.js"></script>
     <script src="js/services/GlobalSettings.js"></script>
     <script src="js/services/Utils.js"></script>
     <script src="js/services/GraphicsEngine.js"></script>
     <script src="js/services/GameBoard.js"></script>
     <script src="js/services/GameEngine.js"></script>
-    <script src="js/directives/GameKeyPressDirective.js"></script>
     <script src="js/directives/GameEngineDirective.js"></script>
     <script src="js/controllers/AppController.js"></script>
     <script src="js/controllers/ScoreBoardController.js"></script>

@@ -14,7 +14,7 @@ gameApp.directive('gameEngine', function($timeout, GameEngine) {
             GameEngine.initialise(canvas, 'img/graphics.png', { width: 30, height: 30, scale: 1 });
 
             function gameLoop() {
-                var nextTick = date.getTime() + 125;
+                var nextTick = date.getTime() + 30;
 
                 var currentKey =  scope.keyPressList && scope.keyPressList.length > 0 ? scope.keyPressList[0] : null;
                 GameEngine.update(currentKey);
