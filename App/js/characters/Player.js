@@ -55,37 +55,11 @@ Player.prototype.calculateAnimation = function(animationCount) {
     switch (this.direction)
     {
         case DirectionEnum.Right:
-            switch (animationCount) {
-                case 0:
-                    spriteEnum = SpriteEnum.PlayerWalkRight1;
-                    break;
-                case 1:
-                    spriteEnum = SpriteEnum.PlayerWalkRight2;
-                    break;
-                case 2:
-                    spriteEnum = SpriteEnum.PlayerWalkRight3;
-                    break;
-                case 3:
-                    spriteEnum = SpriteEnum.PlayerWalkRight4;
-                    break;
-            }
+            spriteEnum = SpriteEnum.PlayerWalkRight1 + animationCount;
             break;
 
         case DirectionEnum.Left:
-            switch (animationCount) {
-                case 0:
-                    spriteEnum = SpriteEnum.PlayerWalkLeft1;
-                    break;
-                case 1:
-                    spriteEnum = SpriteEnum.PlayerWalkLeft2;
-                    break;
-                case 2:
-                    spriteEnum = SpriteEnum.PlayerWalkLeft3;
-                    break;
-                case 3:
-                    spriteEnum = SpriteEnum.PlayerWalkLeft4;
-                    break;
-            }
+            spriteEnum = SpriteEnum.PlayerWalkLeft1 + animationCount;
             break;
 
         case DirectionEnum.None:

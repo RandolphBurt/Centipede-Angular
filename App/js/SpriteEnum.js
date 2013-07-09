@@ -49,11 +49,11 @@ var SpriteEnum = {
     PlayerWalkRight1: 45,
     PlayerWalkRight2: 46,
     PlayerWalkRight3: 47,
-    PlayerWalkRight4: 46, // same image as 2
-    PlayerFire: 48,
-    PlayerWalkLeft1: 49,
-    PlayerWalkLeft2: 50,
-    PlayerWalkLeft3: 51,
-    PlayerWalkLeft4: 50, // same image as 2
-    Explosion: 52
+    PlayerWalkRight4: 48,
+    PlayerFire: 49,
+    PlayerWalkLeft1: 50,
+    PlayerWalkLeft2: 51,
+    PlayerWalkLeft3: 52,
+    PlayerWalkLeft4: 53,
+    Explosion: 54
 };
