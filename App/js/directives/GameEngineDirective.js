@@ -5,8 +5,7 @@ gameApp.directive('gameEngine', function($timeout, GameEngine) {
         restrict: 'E',
         template: '<canvas id="gameCanvas" width="600" height="600" style="border:1px solid #000000;"></canvas>',
         scope: {
-            score: '=',
-            keyPressList: '='
+            score: '='
         },
         link: function(scope, element, attrs, controller) {
             var animation = 0;
@@ -23,37 +22,12 @@ gameApp.directive('gameEngine', function($timeout, GameEngine) {
                     animation = 0;
                 }
 
-                GameEngine.update(animation, scope.keyPressList);
-
-                if (animation == 0 && scope.keyPressList) {
-                    scope.keyPressList.length = 0;
-                }
+                GameEngine.update(animation);
 
                 $timeout(gameLoop, Math.max(0, nextTick - date.getTime()));
             }
 
             gameLoop();
-
         }
     }
-
-        /*
-
-    function keyDown(keyCode) {
-        switch (keyCode) {
-            case 37: //left
-            case 38: //up
-            case 39: //right
-            case 40: //down
-            case 32: //space
-                keyPress = event.keyCode;
-                break;
-
-            default:
-                keyPress = null;
-                break;
-        }
-
-        return true;
-    }     */
 });

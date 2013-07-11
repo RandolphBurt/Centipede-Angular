@@ -1,7 +1,7 @@
 "use strict";
 
 
-gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings, Utils) {
+gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings, KeyPressHandler) {
     return {
         initialise: function(canvas, graphicsFile, gameBoardSize) {
             GraphicsEngine.initialise(canvas, graphicsFile, gameBoardSize.scale);
@@ -14,9 +14,9 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
             this.player = new Player(Math.floor(gameBoardSize.width / 2), gameBoardSize.height - 1);
         },
 
-        update: function(animation, keyPressList) {
+        update: function(animation) {
             if (animation == 0) {
-                var playerMove = ParseKeyPress(keyPressList);
+                var playerMove = KeyPressHandler.getNextMovement();
 
                 if (playerMove.direction != DirectionEnum.None && !GameBoard.playerAllowedToMove(this.player.x, this.player.y, playerMove.direction)) {
                     playerMove.direction = DirectionEnum.None;
@@ -32,36 +32,6 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
             var playerData = this.player.calculateAnimation(animation);
 
             GraphicsEngine.drawImage(playerData.x, playerData.y, playerData.image);
-        }
-    }
-
-    function ParseKeyPress (keyPressList) {
-        var direction = DirectionEnum.None;
-
-        var movementKey = Utils.arrayFirstNonMatchingValue(keyPressList, 32);
-        var isFiring = Utils.arrayContains(keyPressList, 32);
-
-        switch (movementKey) {
-            case 37: //left
-                direction = DirectionEnum.Left;
-                break;
-
-            case 38: //up
-                direction = DirectionEnum.Up;
-                break;
-
-            case 39: //right
-                direction = DirectionEnum.Right;
-                break;
-
-            case 40: //down
-                direction = DirectionEnum.Down;
-                break;
-        }
-
-        return {
-            direction: direction,
-            isFiring: isFiring
         }
     }
 });

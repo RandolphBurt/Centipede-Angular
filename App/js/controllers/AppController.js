@@ -1,10 +1,12 @@
 'use strict';
 
-gameApp.controller('AppController', function($scope) {
+gameApp.controller('AppController', function($scope, KeyPressHandler) {
+
     $scope.keydown = function(keyEvent) {
-        if (!$scope.KeyPressList) {
-            $scope.KeyPressList = [];
-        }
-        $scope.KeyPressList.push(keyEvent.keyCode);
-     }
+        KeyPressHandler.keyPress(keyEvent.keyCode);
+     };
+
+    $scope.keyup = function(keyEvent) {
+        KeyPressHandler.keyRelease(keyEvent.keyCode);
+    };
 });

@@ -3,9 +3,9 @@
 <head>
     <title>Centipede</title>
 </head>
-<body ng-controller="AppController" ng-keydown="keydown($event)"  style="background-color:black">
+<body ng-controller="AppController" ng-keydown="keydown($event)" ng-keyup="keyup($event)"  style="background-color:black">
     <div style="color: red">
-        <div ng-controller="ScoreBoardController">  {{ KeyPressList }}
+        <div ng-controller="ScoreBoardController">
             <div>{{GameScore}}</div>
             <div>{{HighScore}}</div>
             <button ng-click="IncrementScore(20)">Click</button>
@@ -22,6 +22,7 @@
     <script src="js/characters/Player.js"></script>
     <script src="js/services/GlobalSettings.js"></script>
     <script src="js/services/Utils.js"></script>
+    <script src="js/services/KeyPressHandler.js"></script>
     <script src="js/services/GraphicsEngine.js"></script>
     <script src="js/services/GameBoard.js"></script>
     <script src="js/services/GameEngine.js"></script>
