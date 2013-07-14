@@ -11,8 +11,12 @@ gameApp.factory("GameBoard", function(GlobalSettings, Utils, GraphicsEngine) {
                 this.map.push([]);
                 for (var w = 0; w < this.width; w++) {
                     this.map[h].push(0);
-                    if (Utils.random(inPlayerArea(h, this.height) ? GlobalSettings.mushroomChancePlayerArea : GlobalSettings.mushroomChanceNonPlayerArea) === 0) {
-                        this.createMushroom(w, h);
+
+                    // no mushrooms on the bottom row
+                    if (h < this.height - 1) {
+                        if (Utils.random(inPlayerArea(h, this.height) ? GlobalSettings.mushroomChancePlayerArea : GlobalSettings.mushroomChanceNonPlayerArea) === 0) {
+                            this.createMushroom(w, h);
+                        }
                     }
                 }
             }

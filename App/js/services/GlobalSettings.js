@@ -5,7 +5,14 @@ gameApp.factory("GlobalSettings", function() {
        spriteSize: 20,
        spriteSheetWidth: 4,
        playerAreaHeight: 6,
+
+       // board creation
        mushroomChanceNonPlayerArea: 10,
-       mushroomChancePlayerArea: 40
+       mushroomChancePlayerArea: 40,
+
+       minMushroomsBeforeFleaCreated: 40,
+       minMushroomsInPlayerAreaBeforeFleaCreated: 5,
+       fleaCreationChance: 100
+
    }
 });
