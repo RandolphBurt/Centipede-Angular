@@ -99,6 +99,10 @@ gameApp.service("KeyPressHandler", function() {
                 }
             }
 
+            if (typeof this.isFiring == 'undefined') {
+                this.isFiring = false;
+            }
+
             return { direction: direction, isFiring: this.isFiring };
         }
     };
