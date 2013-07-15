@@ -15,39 +15,53 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
         },
 
         update: function(animation) {
-            if ((animation % 2) == 0) {
-                if (this.flea) {
-                    if (this.flea.y >= GameBoard.height) {
-                        this.flea = null;
-                    } else {
-                        this.flea.move();
-                    }
-                }
-            }
+            this.moveFlea(animation);
 
             if (animation == 0) {
                 this.checkCreateFlea();
-
-                var playerMove = KeyPressHandler.getNextMovement();
-
-                if (playerMove.direction != DirectionEnum.None && !GameBoard.playerAllowedToMove(this.player.x, this.player.y, playerMove.direction)) {
-                    playerMove.direction = DirectionEnum.None;
-                }
-
-                this.player.move(playerMove.direction, playerMove.isFiring);
+                this.movePlayer();
             }
 
+            this.drawBoard();
+            this.drawPlayer(animation);
+            this.drawFlea(animation);
+        },
+
+        drawBoard: function() {
             this.canvas.fillStyle = 'black';
             this.canvas.fillRect(0 ,0,  this.canvasWidth, this.canvasHeight);
             GameBoard.draw();
+        },
 
+        drawPlayer: function(animation) {
             var playerData = this.player.calculateAnimation(animation);
-
             GraphicsEngine.drawImage(playerData.x, playerData.y, playerData.image);
+        },
 
+        drawFlea: function(animation) {
             if (this.flea) {
                 var fleaData = this.flea.calculateAnimation(animation);
                 GraphicsEngine.drawImage(fleaData.x, fleaData.y, fleaData.image);
+            }
+        },
+
+        movePlayer: function() {
+            var playerMove = KeyPressHandler.getNextMovement();
+
+            if (playerMove.direction != DirectionEnum.None && !GameBoard.playerAllowedToMove(this.player.x, this.player.y, playerMove.direction)) {
+                playerMove.direction = DirectionEnum.None;
+            }
+
+            this.player.move(playerMove.direction, playerMove.isFiring);
+        },
+
+        moveFlea: function(animation) {
+            if (this.flea) {
+                if (this.flea.y >= GameBoard.height) {
+                    this.flea = null;
+                } else {
+                    this.flea.move(animation);
+                }
             }
         },
 
@@ -63,14 +77,16 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
 
             if (Utils.random(GlobalSettings.fleaCreationChance) === 0) {
                 var x = Utils.random(GameBoard.width);
-                this.flea = new Flea(x, this.fleaCreateMushroom);
+                this.flea = new Flea(x, this.onFleaMoved);
             }
         },
 
-        fleaCreateMushroom: function(x, y) {
-            if (y < GameBoard.height - 1) {
+        onFleaMoved: function(x, prevY) {
+            if (prevY < GameBoard.height - 1) {
                 // Not allowed to put a mushroom on the bottom row
-                GameBoard.createMushroom(x, y);
+                if (Math.floor(Math.random() * 3) === 0) {
+                    GameBoard.createMushroom(x, prevY);
+                }
             }
         }
     }

@@ -1,23 +1,25 @@
 'use strict';
 
-function Flea(x, createMushroomFunction) {
+function Flea(x, onFleaMoved) {
     this.x = x;
     this.y = 0;
     this.prevY = 0;
     this.dy = 0;
     this.spriteEnum = SpriteEnum.Flea;
-    this.createMushroomFunction = createMushroomFunction;
+    this.onFleaMoved = onFleaMoved;
 };
 
-Flea.prototype.move = function(){
+Flea.prototype.move = function(animation) {
+    if ((animation % 2) !== 0) {
+        return;
+    }
+
     this.prevY = this.y;
 
     this.y += 1;
     this.dy = 0.5; // Flea moves at twice normal speed
 
-    if (Math.floor(Math.random() * 3) === 0) {
-        this.createMushroomFunction(this.x, this.prevY);
-    }
+    this.onFleaMoved(this.x, this.prevY, this.y);
 };
 
 Flea.prototype.calculateAnimation = function(animationCount) {
