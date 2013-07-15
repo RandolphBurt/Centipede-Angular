@@ -17,11 +17,11 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
         update: function(animation) {
             this.moveFlea(animation);
             this.moveSpider(animation);
+            this.movePlayer(animation);
 
             if (animation == 0) {
                 this.checkCreateFlea();
                 this.checkCreateSpider();
-                this.movePlayer();
             }
 
             this.drawBoard();
@@ -56,7 +56,11 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
             }
         },
 
-        movePlayer: function() {
+        movePlayer: function(animation) {
+            if (animation % 2 !== 0) {
+                return;
+            }
+
             var playerMove = KeyPressHandler.getNextMovement();
 
             if (playerMove.direction != DirectionEnum.None && !GameBoard.playerAllowedToMove(this.player.x, this.player.y, playerMove.direction)) {

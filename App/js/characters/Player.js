@@ -23,34 +23,34 @@ Player.prototype.move = function(direction, isFiring){
 
         case DirectionEnum.Left:
             this.x -= 1;
-            this.dx = -0.25;
+            this.dx = -0.5;
             this.dy = 0;
             break;
 
         case DirectionEnum.Right:
             this.x += 1;
-            this.dx = 0.25;
+            this.dx = 0.5;
             this.dy = 0;
             break;
 
         case DirectionEnum.Up:
             this.y -= 1;
             this.dx = 0;
-            this.dy = -0.25;
+            this.dy = -0.5;
             break;
 
         case DirectionEnum.Down:
             this.y += 1;
             this.dx = 0;
-            this.dy = 0.25;
+            this.dy = 0.5;
             break;
     }
 };
 
 Player.prototype.calculateAnimation = function(animationCount) {
     var spriteEnum = SpriteEnum.PlayerStandStill;
-    var destX = this.prevX + (animationCount * this.dx);
-    var destY = this.prevY + (animationCount * this.dy);
+    var destX = this.prevX + ((animationCount % 2) * this.dx);
+    var destY = this.prevY + ((animationCount % 2) * this.dy);
 
     switch (this.direction)
     {
