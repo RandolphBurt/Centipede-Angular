@@ -17,17 +17,20 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
         update: function(animation) {
             this.moveFlea(animation);
             this.moveSpider(animation);
+            this.moveSnail(animation);
             this.movePlayer(animation);
 
             if (animation == 0) {
                 this.checkCreateFlea();
                 this.checkCreateSpider();
+                this.checkCreateSnail();
             }
 
             this.drawBoard();
             this.drawPlayer(animation);
             this.drawFlea(animation);
             this.drawSpider(animation);
+            this.drawSnail(animation);
         },
 
         drawBoard: function() {
@@ -56,6 +59,14 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
             }
         },
 
+        drawSnail: function(animation) {
+            if (this.snail) {
+                var snailData = this.snail.calculateAnimation(animation);
+                GraphicsEngine.drawImage(snailData[0].x, snailData[0].y, snailData[0].image);
+                GraphicsEngine.drawImage(snailData[1].x, snailData[1].y, snailData[1].image);
+            }
+        },
+
         movePlayer: function(animation) {
             if (animation % 2 !== 0) {
                 return;
@@ -80,6 +91,16 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
             }
         },
 
+        moveSnail: function(animation) {
+            if (this.snail) {
+                if (this.snail.x >= GameBoard.width) {
+                    this.snail = null;
+                } else {
+                    this.snail.move(animation);
+                }
+            }
+        },
+
         moveFlea: function(animation) {
             if (this.flea) {
                 if (this.flea.y >= GameBoard.height) {
@@ -87,6 +108,18 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
                 } else {
                     this.flea.move(animation);
                 }
+            }
+        },
+
+        checkCreateSnail: function() {
+            if (this.snail !== undefined && this.snail !== null) {
+                return;
+            }
+
+            if (Utils.random(GlobalSettings.snailCreationChance) === 0) {
+                var y = Utils.random(GameBoard.height - GlobalSettings.playerAreaHeight);
+
+                this.snail = new Snail(y, this.onSnailMoved);
             }
         },
 
@@ -135,6 +168,12 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
                 if (x >= 0 && x < GameBoard.width - 1) {
                     GameBoard.destroyMushroom(x + 1, y);
                 }
+            }
+        },
+
+        onSnailMoved: function(prevX, x, y) {
+            if (x < GameBoard.width) {
+                GameBoard.poisonMushroom(x, y);
             }
         }
     }

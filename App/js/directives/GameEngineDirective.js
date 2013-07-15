@@ -14,7 +14,7 @@ gameApp.directive('gameEngine', function($timeout, GameEngine) {
             GameEngine.initialise(canvas, 'img/graphics.png', { width: 30, height: 30, scale: 1 });
 
             function gameLoop() {
-                var nextTick = date.getTime() + 30;
+                var nextTick = date.getTime() + 60;
 
                 animation++;
 

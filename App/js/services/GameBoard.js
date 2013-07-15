@@ -34,6 +34,12 @@ gameApp.factory("GameBoard", function(GlobalSettings, Utils, GraphicsEngine) {
             this.map[y][x] = 4;
         },
 
+        poisonMushroom: function(x, y) {
+            if (this.map[y][x] > 0) {
+                this.map[y][x] *= -1;
+            }
+        },
+
         destroyMushroom: function(x, y) {
             this.map[y][x] = 0;
         },
