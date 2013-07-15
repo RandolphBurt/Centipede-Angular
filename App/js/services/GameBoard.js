@@ -34,6 +34,10 @@ gameApp.factory("GameBoard", function(GlobalSettings, Utils, GraphicsEngine) {
             this.map[y][x] = 4;
         },
 
+        destroyMushroom: function(x, y) {
+            this.map[y][x] = 0;
+        },
+
         playerAllowedToMove: function(currentX, currentY, direction) {
             var x = currentX;
             var y = currentY;

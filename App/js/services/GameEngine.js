@@ -16,15 +16,18 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
 
         update: function(animation) {
             this.moveFlea(animation);
+            this.moveSpider(animation);
 
             if (animation == 0) {
                 this.checkCreateFlea();
+                this.checkCreateSpider();
                 this.movePlayer();
             }
 
             this.drawBoard();
             this.drawPlayer(animation);
             this.drawFlea(animation);
+            this.drawSpider(animation);
         },
 
         drawBoard: function() {
@@ -45,6 +48,14 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
             }
         },
 
+        drawSpider: function(animation) {
+            if (this.spider) {
+                var spiderData = this.spider.calculateAnimation(animation);
+                GraphicsEngine.drawImage(spiderData[0].x, spiderData[0].y, spiderData[0].image);
+                GraphicsEngine.drawImage(spiderData[1].x, spiderData[1].y, spiderData[1].image);
+            }
+        },
+
         movePlayer: function() {
             var playerMove = KeyPressHandler.getNextMovement();
 
@@ -55,6 +66,16 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
             this.player.move(playerMove.direction, playerMove.isFiring);
         },
 
+        moveSpider: function(animation) {
+            if (this.spider) {
+                if (this.spider.x < -1 || this.spider.x >= GameBoard.width) {
+                    this.spider = null;
+                } else {
+                    this.spider.move(animation);
+                }
+            }
+        },
+
         moveFlea: function(animation) {
             if (this.flea) {
                 if (this.flea.y >= GameBoard.height) {
@@ -62,6 +83,19 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
                 } else {
                     this.flea.move(animation);
                 }
+            }
+        },
+
+        checkCreateSpider: function() {
+            if (this.spider !== undefined && this.spider !== null) {
+                return;
+            }
+
+            if (Utils.random(GlobalSettings.spiderCreationChance) === 0) {
+                var x = this.player.x > (GameBoard.width / 2) ? 0 : GameBoard.width - 1;
+                var y = (GameBoard.height - GlobalSettings.playerAreaHeight) + Utils.random(GlobalSettings.playerAreaHeight);
+
+                this.spider = new Spider(x, y, GameBoard.height -1, (GameBoard.height - GlobalSettings.playerAreaHeight) + 1, this.onSpiderMoved);
             }
         },
 
@@ -86,6 +120,16 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
                 // Not allowed to put a mushroom on the bottom row
                 if (Math.floor(Math.random() * 3) === 0) {
                     GameBoard.createMushroom(x, prevY);
+                }
+            }
+        },
+
+        onSpiderMoved: function(prevX, prevY, x, y) {
+            if (x >= 0 && x < GameBoard.width) {
+                GameBoard.destroyMushroom(x, y);
+
+                if (x >= 0 && x < GameBoard.width - 1) {
+                    GameBoard.destroyMushroom(x + 1, y);
                 }
             }
         }
