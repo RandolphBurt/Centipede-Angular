@@ -25,6 +25,14 @@ describe('KeyPressHandler', function() {
             expect(keyPressHandler.getNextMovement()).toEqual( { direction: DirectionEnum.None, isFiring: false} );
         });
 
+        it('should indicate fire once if fire key quickly pressed and released before calling getNextMovement', function() {
+            keyPressHandler.keyPress(32);
+            keyPressHandler.keyRelease(32);
+            expect(keyPressHandler.getNextMovement()).toEqual( { direction: DirectionEnum.None, isFiring: true} );
+            expect(keyPressHandler.getNextMovement()).toEqual( { direction: DirectionEnum.None, isFiring: false} );
+
+        });
+
         it ('should continue to return movement until the key is released', function() {
             // moving down
             keyPressHandler.keyPress(40);

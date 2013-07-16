@@ -31,7 +31,7 @@ gameApp.service("KeyPressHandler", function() {
     return {
         keyPress: function(keyCode) {
             if (isFireKey(keyCode)) {
-                this.isFiring = true;
+                this.fireKeyStatus = { keyPressed: true, processed: false };
                 return;
             }
 
@@ -62,7 +62,7 @@ gameApp.service("KeyPressHandler", function() {
 
         keyRelease: function(keyCode) {
             if (isFireKey(keyCode)) {
-                this.isFiring = false;
+                this.fireKeyStatus.keyPressed = false;
                 return;
             }
 
@@ -101,11 +101,17 @@ gameApp.service("KeyPressHandler", function() {
                 }
             }
 
-            if (typeof this.isFiring == 'undefined') {
-                this.isFiring = false;
+            if (typeof this.fireKeyStatus == 'undefined') {
+                this.fireKeyStatus = { keyPressed: false, processed: true };
             }
 
-            return { direction: direction, isFiring: this.isFiring };
+            var isFiring = this.fireKeyStatus.keyPressed || !this.fireKeyStatus.processed;
+
+            if (!this.fireKeyStatus.processed) {
+                this.fireKeyStatus.processed = true;
+            }
+
+            return { direction: direction, isFiring: isFiring };
         }
     };
 
