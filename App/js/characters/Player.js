@@ -47,19 +47,19 @@ Player.prototype.move = function(direction, isFiring){
     }
 };
 
-Player.prototype.calculateAnimation = function(animationCount) {
+Player.prototype.calculateAnimation = function(animation) {
     var spriteEnum = SpriteEnum.PlayerStandStill;
-    var destX = this.prevX + ((animationCount % 2) * this.dx);
-    var destY = this.prevY + ((animationCount % 2) * this.dy);
+    var destX = this.prevX + ((animation % 2) * this.dx);
+    var destY = this.prevY + ((animation % 2) * this.dy);
 
     switch (this.direction)
     {
         case DirectionEnum.Right:
-            spriteEnum = SpriteEnum.PlayerWalkRight1 + animationCount;
+            spriteEnum = SpriteEnum.PlayerWalkRight1 + animation;
             break;
 
         case DirectionEnum.Left:
-            spriteEnum = SpriteEnum.PlayerWalkLeft1 + animationCount;
+            spriteEnum = SpriteEnum.PlayerWalkLeft1 + animation;
             break;
 
         case DirectionEnum.None:

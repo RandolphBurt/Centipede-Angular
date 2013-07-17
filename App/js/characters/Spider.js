@@ -46,13 +46,13 @@ Spider.prototype.move = function(animation) {
     this.onSpiderMoved(this.prevX, this.prevY, this.x, this.y);
 };
 
-Spider.prototype.calculateAnimation = function(animationCount) {
-    var destX = this.prevX + (animationCount * this.dx);
-    var destY = this.prevY + (animationCount * this.dy);
+Spider.prototype.calculateAnimation = function(animation) {
+    var destX = this.prevX + (animation * this.dx);
+    var destY = this.prevY + (animation * this.dy);
 
     var spriteEnum = SpriteEnum.SpiderAnim1Left;
 
-    if (animationCount % 2) {
+    if (animation % 2) {
         spriteEnum += 2;
     }
 

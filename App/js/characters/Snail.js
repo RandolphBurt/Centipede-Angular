@@ -19,12 +19,12 @@ Snail.prototype.move = function(animation) {
     this.onSnailMoved(this.prevX, this.x, this.y);
 };
 
-Snail.prototype.calculateAnimation = function(animationCount) {
-    var destX = this.prevX + (animationCount * this.dx);
+Snail.prototype.calculateAnimation = function(animation) {
+    var destX = this.prevX + (animation * this.dx);
 
     var spriteEnum = SpriteEnum.SnailAnim1Left;
 
-    switch (animationCount) {
+    switch (animation) {
         case 1:
         case 3:
             spriteEnum = SpriteEnum.SnailAnim2Left;

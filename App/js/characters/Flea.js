@@ -22,8 +22,8 @@ Flea.prototype.move = function(animation) {
     this.onFleaMoved(this.x, this.prevY, this.y);
 };
 
-Flea.prototype.calculateAnimation = function(animationCount) {
-    var destY = this.prevY + ((animationCount % 2) * this.dy);
+Flea.prototype.calculateAnimation = function(animation) {
+    var destY = this.prevY + ((animation % 2) * this.dy);
 
     return {
         image: this.spriteEnum,
