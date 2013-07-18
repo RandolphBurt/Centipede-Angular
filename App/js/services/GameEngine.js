@@ -3,6 +3,9 @@
 
 gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings, KeyPressHandler, Utils) {
     return {
+        // TODO:
+        centipedeFramesPerMove: 2,
+
         initialise: function(canvas, graphicsFile, gameBoardSize) {
             GraphicsEngine.initialise(canvas, graphicsFile, gameBoardSize.scale);
             GameBoard.initialise(gameBoardSize.width, gameBoardSize.height);
@@ -12,12 +15,24 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
             this.canvas = canvas;
 
             this.player = new Player(Math.floor(gameBoardSize.width / 2), gameBoardSize.height - 1);
+
+            this.centipedes = [];
+            this.centipedes.push(new Centipede(
+                Math.floor(gameBoardSize.width / 2),
+                0,
+                10,
+                (gameBoardSize.height - GlobalSettings.playerAreaHeight) + 1,
+                gameBoardSize.height - 1,
+                0,
+                gameBoardSize.width - 1,
+                this.centipedeFramesPerMove));
         },
 
         update: function(animation) {
             this.moveFlea(animation);
             this.moveSpider(animation);
             this.moveSnail(animation);
+            this.moveCentipedes(animation);
             this.movePlayer(animation);
 
             if (animation == 0) {
@@ -31,6 +46,7 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
             this.drawFlea(animation);
             this.drawSpider(animation);
             this.drawSnail(animation);
+            this.drawCentipedes(animation);
         },
 
         drawBoard: function() {
@@ -42,6 +58,16 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
         drawPlayer: function(animation) {
             var playerData = this.player.calculateAnimation(animation);
             GraphicsEngine.drawImage(playerData.x, playerData.y, playerData.image);
+        },
+
+        drawCentipedes: function(animation) {
+            for (var i in this.centipedes) {
+                var centipedeData = this.centipedes[i].calculateAnimation(animation);
+
+                for (var c in centipedeData) {
+                    GraphicsEngine.drawImage(centipedeData[c].x, centipedeData[c].y, centipedeData[c].image);
+                }
+            }
         },
 
         drawFlea: function(animation) {
@@ -79,6 +105,13 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
             }
 
             this.player.move(playerMove.direction, playerMove.isFiring);
+        },
+
+        moveCentipedes: function(animation) {
+            for (var i in this.centipedes)
+            {
+                this.centipedes[i].move(animation, this.centipedeFramesPerMove);
+            }
         },
 
         moveSpider: function(animation) {
