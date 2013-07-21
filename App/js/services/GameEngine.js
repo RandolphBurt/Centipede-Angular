@@ -25,7 +25,8 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
                 gameBoardSize.height - 1,
                 0,
                 gameBoardSize.width - 1,
-                this.centipedeFramesPerMove));
+                this.centipedeFramesPerMove,
+                this.gameBoardCollisionCheck));
         },
 
         update: function(animation) {
@@ -183,6 +184,10 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
                 var x = Utils.random(GameBoard.width);
                 this.flea = new Flea(x, this.onFleaMoved);
             }
+        },
+
+        gameBoardCollisionCheck: function(x, y) {
+            return GameBoard.checkCollision(x, y);
         },
 
         onFleaMoved: function(x, prevY) {

@@ -44,7 +44,7 @@ CentipedeBody.prototype.calculateAnimation = function(animation) {
     };
 };
 
-function Centipede(x, y, bodyLength, upBoundary, downBoundary, leftBoundary, rightBoundary, framesPerSecond) {
+function Centipede(x, y, bodyLength, upBoundary, downBoundary, leftBoundary, rightBoundary, framesPerSecond, gameBoardCollisionCheck) {
     this.upBoundary = upBoundary;
     this.downBoundary = downBoundary;
     this.rightBoundary = rightBoundary;
@@ -54,6 +54,7 @@ function Centipede(x, y, bodyLength, upBoundary, downBoundary, leftBoundary, rig
     this.previousDirection = DirectionEnum.Down;
     this.currentDirection = DirectionEnum.Right;
     this.fallingStraightDown = false;
+    this.gameBoardCollisionCheck = gameBoardCollisionCheck;
 
     this.centipedeBody = [];
 
@@ -89,27 +90,31 @@ Centipede.prototype.move = function(animation, framesPerMove) {
         return;
     }
 
-    if (this.fallingStraightDown) {
-        if (this.y == this.downBoundary) {
+    var collisionType = this.gameBoardCollisionCheck(this.x, this.y);
+
+    if (this.fallingStraightDown || collisionType === BoardLocationEnum.PoisonMushroom) {
+        if (this.y === this.downBoundary) {
             this.fallingStraightDown = false;
         } else {
-            this.y++;
+            this.fallingStraightDown = true;
+            this.currentDirection = DirectionEnum.Down;
         }
     }
 
     if (!this.fallingStraightDown) {
         if (this.currentDirection === DirectionEnum.Right) {
-            if (this.x >= this.rightBoundary) {
+            if (this.x >= this.rightBoundary || collisionType === BoardLocationEnum.Mushroom) {
                 this.setDirectionVertical();
                 this.previousDirection = DirectionEnum.Right;
             }
         } else if (this.currentDirection === DirectionEnum.Left) {
-            if (this.x <= this.leftBoundary) {
+            if (this.x <= this.leftBoundary || collisionType == BoardLocationEnum.Mushroom) {
                 this.setDirectionVertical();
                 this.previousDirection = DirectionEnum.Left;
             }
         } else {
             var nowDirection = this.currentDirection;
+
             if (this.previousDirection === DirectionEnum.Right) {
                 this.currentDirection = DirectionEnum.Left;
             } else {
