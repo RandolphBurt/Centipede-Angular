@@ -70,8 +70,17 @@ gameApp.factory("GameBoard", function(GlobalSettings, Utils, GraphicsEngine) {
             return this.map[y][x] == 0;
         },
 
-        checkCollision: function(x, y) {
+        checkCollision: function(x, y, destroyLocation) {
             var mushroomSpace = this.map[y][x];
+
+            if (destroyLocation) {
+                if (mushroomSpace < 0) {
+                    this.map[y][x]++;
+                } else if (mushroomSpace > 0) {
+                    this.map[y][x]--;
+                }
+            }
+
             if (mushroomSpace > 0) {
                 return BoardLocationEnum.Mushroom;
             } else if (mushroomSpace < 0) {

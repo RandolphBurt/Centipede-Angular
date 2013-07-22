@@ -37,4 +37,12 @@ Snail.prototype.calculateAnimation = function(animation) {
 
     return [ { image: spriteEnum,     x: destX,     y: this.y },
              { image: spriteEnum + 1, x: destX + 1, y: this.y } ];
-}
+};
+
+Snail.prototype.checkCollision = function(x, y) {
+    if ((this.x === x || this.x + 1 === x) && this.y === y) {
+        return true;
+    }
+
+    return false;
+};

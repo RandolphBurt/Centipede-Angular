@@ -30,4 +30,12 @@ Flea.prototype.calculateAnimation = function(animation) {
         x: this.x,
         y: destY
     };
-}
+};
+
+Flea.prototype.checkCollision = function(x, y) {
+    if (this.x === x && this.y === y) {
+        return true;
+    }
+
+    return false;
+};

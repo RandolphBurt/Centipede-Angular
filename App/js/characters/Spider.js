@@ -58,4 +58,12 @@ Spider.prototype.calculateAnimation = function(animation) {
 
     return [ { image: spriteEnum,     x: destX,     y: destY },
              { image: spriteEnum + 1, x: destX + 1, y: destY } ];
-}
+};
+
+Spider.prototype.checkCollision = function(x, y) {
+    if ((this.x === x || this.x + 1 === x) && this.y === y) {
+        return true;
+    }
+
+    return false;
+};

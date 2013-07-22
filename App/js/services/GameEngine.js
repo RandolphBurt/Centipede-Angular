@@ -1,35 +1,42 @@
 "use strict";
-
-
 gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings, KeyPressHandler, Utils) {
     return {
-        // TODO:
-        centipedeFramesPerMove: 2,
+    // TODO:
+    centipedeFramesPerMove: 2,
 
-        initialise: function(canvas, graphicsFile, gameBoardSize) {
-            GraphicsEngine.initialise(canvas, graphicsFile, gameBoardSize.scale);
-            GameBoard.initialise(gameBoardSize.width, gameBoardSize.height);
+    initialise: function(canvas, graphicsFile, gameBoardSize) {
+        GraphicsEngine.initialise(canvas, graphicsFile, gameBoardSize.scale);
+        GameBoard.initialise(gameBoardSize.width, gameBoardSize.height);
 
-            this.canvasWidth = gameBoardSize.width * gameBoardSize.scale * GlobalSettings.spriteSize;
-            this.canvasHeight = gameBoardSize.height * gameBoardSize.scale * GlobalSettings.spriteSize;
-            this.canvas = canvas;
+        this.canvasWidth = gameBoardSize.width * gameBoardSize.scale * GlobalSettings.spriteSize;
+        this.canvasHeight = gameBoardSize.height * gameBoardSize.scale * GlobalSettings.spriteSize;
+        this.canvas = canvas;
 
-            this.player = new Player(Math.floor(gameBoardSize.width / 2), gameBoardSize.height - 1);
+        this.bullets = [];
 
-            this.centipedes = [];
-            this.centipedes.push(new Centipede(
-                Math.floor(gameBoardSize.width / 2),
-                0,
-                10,
-                (gameBoardSize.height - GlobalSettings.playerAreaHeight) + 1,
-                gameBoardSize.height - 1,
-                0,
-                gameBoardSize.width - 1,
-                this.centipedeFramesPerMove,
-                this.gameBoardCollisionCheck));
-        },
+        this.centipedes = [];
+        this.centipedes.push(new Centipede(
+            Math.floor(gameBoardSize.width / 2),
+            0,
+            10,
+            (gameBoardSize.height - GlobalSettings.playerAreaHeight) + 1,
+            gameBoardSize.height - 1,
+            0,
+            gameBoardSize.width - 1,
+            this.centipedeFramesPerMove,
+            this.gameBoardCollisionCheck));
+
+        var me = this;
+
+        this.player = new Player(
+            Math.floor(gameBoardSize.width / 2),
+            gameBoardSize.height - 1,
+            function(x, y) { me.fireBullet(x, y)});
+    },
+
 
         update: function(animation) {
+            this.moveBullets();
             this.moveFlea(animation);
             this.moveSpider(animation);
             this.moveSnail(animation);
@@ -48,6 +55,41 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
             this.drawSpider(animation);
             this.drawSnail(animation);
             this.drawCentipedes(animation);
+            this.drawBullets();
+        },
+
+        fireBullet: function(x, y) {
+            if (this.bullets.length >= GlobalSettings.maxBulletsOnScreen) {
+                return;
+            }
+
+            var me = this;
+            this.bullets.push(new Bullet(x, y, function(x, y) { return me.checkBulletCollision(x, y)}));
+        },
+
+        checkBulletCollision: function(x, y) {
+            var collision = false;
+
+            if (this.flea && this.flea.checkCollision(x, y)) {
+                this.flea = null;
+                collision = true;
+            }
+
+            if (this.spider && this.spider.checkCollision(x, y)) {
+                this.spider = null;
+                collision = true;
+            }
+
+            if (this.snail && this.snail.checkCollision(x, y)) {
+                this.snail = null;
+                collision = true;
+            }
+
+            if (GameBoard.checkCollision(x, y, true) !== BoardLocationEnum.Space) {
+                collision = true;
+            }
+
+            return collision;
         },
 
         drawBoard: function() {
@@ -59,6 +101,13 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
         drawPlayer: function(animation) {
             var playerData = this.player.calculateAnimation(animation);
             GraphicsEngine.drawImage(playerData.x, playerData.y, playerData.image);
+        },
+
+        drawBullets: function() {
+            for (var i = 0; i < this.bullets.length; i++) {
+                var bulletData = this.bullets[i].calculateAnimation();
+                GraphicsEngine.drawImage(bulletData.x, bulletData.y, bulletData.image);
+            }
         },
 
         drawCentipedes: function(animation) {
@@ -113,6 +162,21 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
             {
                 this.centipedes[i].move(animation, this.centipedeFramesPerMove);
             }
+        },
+
+        moveBullets: function() {
+            var activeBullets = [];
+            for (var i = 0; i < this.bullets.length; i++) {
+                var bullet = this.bullets[i];
+
+                bullet.move();
+
+                if (bullet.bulletState !== BulletState.Dead) {
+                    activeBullets.push(bullet)
+                }
+            }
+
+            this.bullets = activeBullets;
         },
 
         moveSpider: function(animation) {
@@ -187,7 +251,7 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
         },
 
         gameBoardCollisionCheck: function(x, y) {
-            return GameBoard.checkCollision(x, y);
+            return GameBoard.checkCollision(x, y, false);
         },
 
         onFleaMoved: function(x, prevY) {

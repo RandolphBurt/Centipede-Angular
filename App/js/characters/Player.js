@@ -1,4 +1,4 @@
-function Player(x, y) {
+function Player(x, y, fireBullet) {
     this.x = x;
     this.y = y;
     this.prevX = x;
@@ -7,6 +7,7 @@ function Player(x, y) {
     this.dy = 0;
     this.direction = DirectionEnum.None;
     this.isFiring = false;
+    this.fireBullet = fireBullet;
 };
 
 Player.prototype.move = function(direction, isFiring){
@@ -44,6 +45,10 @@ Player.prototype.move = function(direction, isFiring){
             this.dx = 0;
             this.dy = 0.5;
             break;
+    }
+
+    if (this.isFiring) {
+        this.fireBullet(this.prevX, this.prevY - 1);
     }
 };
 

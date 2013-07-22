@@ -12,11 +12,11 @@ gameApp.factory("GlobalSettings", function() {
 
        minMushroomsBeforeFleaCreated: 40,
        minMushroomsInPlayerAreaBeforeFleaCreated: 5,
+
        fleaCreationChance: 100,
-
        spiderCreationChance: 25,
+       snailCreationChance: 200,
 
-       snailCreationChance: 200
-
+       maxBulletsOnScreen: 5
    }
 });
