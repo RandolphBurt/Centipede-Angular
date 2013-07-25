@@ -14,19 +14,23 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
 
         this.bullets = [];
 
+        var me = this;
+
         this.centipedes = [];
         this.centipedes.push(new Centipede(
             Math.floor(gameBoardSize.width / 2),
             0,
-            10,
+            20,
             (gameBoardSize.height - GlobalSettings.playerAreaHeight) + 1,
             gameBoardSize.height - 1,
             0,
             gameBoardSize.width - 1,
             this.centipedeFramesPerMove,
-            this.gameBoardCollisionCheck));
-
-        var me = this;
+            DirectionEnum.Down,
+            DirectionEnum.Right,
+            this.gameBoardCollisionCheck,
+            function(centipede) { me.generateNewCentipede(centipede)}
+        ));
 
         this.player = new Player(
             Math.floor(gameBoardSize.width / 2),
@@ -83,6 +87,13 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
             if (this.snail && this.snail.checkCollision(x, y)) {
                 this.snail = null;
                 collision = true;
+            }
+
+            for (var i = 0; i < this.centipedes.length; i++) {
+                if (this.centipedes[i].checkCollision(x, y, true)) {
+                    GameBoard.createMushroom(x, y);
+                    collision = true;
+                }
             }
 
             if (GameBoard.checkCollision(x, y, true) !== BoardLocationEnum.Space) {
@@ -158,8 +169,12 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
         },
 
         moveCentipedes: function(animation) {
-            for (var i in this.centipedes)
-            {
+            for (var i = this.centipedes.length - 1; i >= 0; i--) {
+                var centipede = this.centipedes[i];
+                if (centipede.characterState === CharacterState.Dead) {
+                    this.centipedes.splice(i, 1);
+                    continue;
+                }
                 this.centipedes[i].move(animation, this.centipedeFramesPerMove);
             }
         },
@@ -252,6 +267,10 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
 
         gameBoardCollisionCheck: function(x, y) {
             return GameBoard.checkCollision(x, y, false);
+        },
+
+        generateNewCentipede: function(newCentipede) {
+            this.centipedes.push(newCentipede);
         },
 
         onFleaMoved: function(x, prevY) {

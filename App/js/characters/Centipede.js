@@ -1,78 +1,40 @@
 "use strict";
 
-function CentipedeBody(x, y, prevX, prevY, framesPerMove) {
-    this.prevX = prevX;
-    this.prevY = prevY;
-    this.x = x;
-    this.y = y;
-
-    this.setSpeed(framesPerMove);
-};
-
-CentipedeBody.prototype.setSpeed = function(framesPerMove) {
-    this.dx = (this.x - this.prevX) / framesPerMove;
-    this.dy = (this.y - this.prevY) / framesPerMove;
-};
-
-CentipedeBody.prototype.move = function(newX, newY, framesPerMove) {
-    this.prevX = this.x;
-    this.prevY = this.y;
-    this.x = newX;
-    this.y = newY;
-
-    this.setSpeed(framesPerMove);
-};
-
-CentipedeBody.prototype.calculateAnimation = function(animation) {
-    var destX = this.prevX + this.dx;
-    var destY = this.prevY + this.dy;
-
-    var spriteEnum = SpriteEnum.CentipedeBodyVertical1;
-
-    if (this.dx > 0) {
-        spriteEnum = SpriteEnum.CentipedeBodyRight1;
-    } else if (this.dx < 0) {
-        spriteEnum = SpriteEnum.CentipedeBodyLeft1;
-    }
-
-    spriteEnum += animation;
-
-    return {
-        image: spriteEnum,
-        x: destX,
-        y: destY
-    };
-};
-
-function Centipede(x, y, bodyLength, upBoundary, downBoundary, leftBoundary, rightBoundary, framesPerSecond, gameBoardCollisionCheck) {
+function Centipede(x, y, bodyLength, upBoundary, downBoundary, leftBoundary, rightBoundary, framesPerMove, previousDirection, currentDirection, gameBoardCollisionCheck, onNewCentipedeGenerated) {
     this.upBoundary = upBoundary;
     this.downBoundary = downBoundary;
     this.rightBoundary = rightBoundary;
     this.leftBoundary = leftBoundary;
     this.x = x;
     this.y = y;
-    this.previousDirection = DirectionEnum.Down;
-    this.currentDirection = DirectionEnum.Right;
+    this.previousDirection = previousDirection;
+    this.currentDirection = currentDirection;
     this.fallingStraightDown = false;
+    this.framesPerMove = framesPerMove;
     this.gameBoardCollisionCheck = gameBoardCollisionCheck;
+    this.onNewCentipedeGenerated = onNewCentipedeGenerated;
+    this.characterState = CharacterState.Alive;
+
+    this.setPositionFromDirection();
 
     this.centipedeBody = [];
 
-    this.prevX = x - 1;
-    this.prevY = y;
-
     var xBody = this.x;
-    for (var i = 0; i < bodyLength; i++) {
-        xBody--;
-        this.centipedeBody.push(new CentipedeBody(xBody, this.y, xBody - 1, this.y, framesPerSecond))
-    }
+    var yBody = this.y;
 
-    this.setSpeed(framesPerSecond);
+    var yDiff = this.y - this.prevY;
+    var xDiff = this.x - this.prevX;
+
+    for (var i = 0; i < bodyLength; i++) {
+        xBody -= xDiff;
+        yBody -= yDiff;
+        this.centipedeBody.push(new CentipedeBody(xBody, this.y, xBody - xDiff, yBody - yDiff, this.framesPerMove))
+    }
 };
 
-Centipede.prototype.setSpeed = function(framesPerMove) {
-    this.dx = (this.x - this.prevX) / framesPerMove;
-    this.dy = (this.y - this.prevY) / framesPerMove;
+Centipede.prototype.setSpeed = function() {
+    this.dx = (this.x - this.prevX) / this.framesPerMove;
+    this.dy = (this.y - this.prevY) / this.framesPerMove;
 };
 
 Centipede.prototype.setDirectionVertical = function() {
@@ -85,8 +47,8 @@ Centipede.prototype.setDirectionVertical = function() {
     }
 };
 
-Centipede.prototype.move = function(animation, framesPerMove) {
-    if ((animation + 1) % framesPerMove !== 0) {
+Centipede.prototype.move = function(animation) {
+    if ((animation + 1) % this.framesPerMove !== 0) {
         return;
     }
 
@@ -130,6 +92,20 @@ Centipede.prototype.move = function(animation, framesPerMove) {
         }
     }
 
+    this.setPositionFromDirection();
+
+    var prevBodyX = this.prevX;
+    var prevBodyY = this.prevY;
+    for (var i in this.centipedeBody) {
+        this.centipedeBody[i].move(prevBodyX, prevBodyY);
+        prevBodyX = this.centipedeBody[i].prevX;
+        prevBodyY = this.centipedeBody[i].prevY;
+    }
+
+    this.setSpeed();
+};
+
+Centipede.prototype.setPositionFromDirection = function() {
     this.prevX = this.x;
     this.prevY = this.y;
 
@@ -147,17 +123,7 @@ Centipede.prototype.move = function(animation, framesPerMove) {
             this.x--;
             break;
     }
-
-    var prevBodyX = this.prevX;
-    var prevBodyY = this.prevY;
-    for (var i in this.centipedeBody) {
-        this.centipedeBody[i].move(prevBodyX, prevBodyY, framesPerMove);
-        prevBodyX = this.centipedeBody[i].prevX;
-        prevBodyY = this.centipedeBody[i].prevY;
-    }
-
-    this.setSpeed(framesPerMove);
-};
+}
 
 Centipede.prototype.calculateAnimation = function(animation) {
     var destX = this.prevX + this.dx;
@@ -181,3 +147,70 @@ Centipede.prototype.calculateAnimation = function(animation) {
 
     return animations;
 };
+
+Centipede.prototype.checkCollision = function(x, y, causeSplit) {
+    var hit = false;
+
+    if (!causeSplit) {
+        if (this.x === x && this.y === y) {
+            hit = true;
+        }
+
+        for(var i = 0; i < this.centipedeBody.length; i++) {
+            if (this.centipedeBody[i].checkCollision(x, y)) {
+                hit = true;
+            }
+        }
+    } else {
+        if (this.x === x && this.y === y) {
+            // we've hit the head of the centipede
+            if (this.centipedeBody.length === 0) {
+                this.characterState = CharacterState.Dead;
+            } else {
+                // make the first part of the body the head - and then remove that body part
+                this.x = this.centipedeBody[0].x;
+                this.y = this.centipedeBody[0].y;
+                this.centipedeBody.splice(0, 1);
+            }
+            hit = true;
+
+        } else if (this.centipedeBody.length > 0) {
+            if (this.centipedeBody[this.centipedeBody.length - 1].checkCollision(x, y)) {
+                // hit the end of the tail/body - so just remove that bit - no new centipede to create
+                this.centipedeBody.pop();
+                hit = true;
+            } else {
+                for (var i = 0; i < this.centipedeBody.length - 1; i++) {
+                    if (this.centipedeBody[i].checkCollision(x, y)) {
+                        // split centipede
+                        var newCentipede = new Centipede(
+                            this.centipedeBody[i + 1].x,
+                            this.centipedeBody[i + 1].y,
+                            0,
+                            this.upBoundary,
+                            this.downBoundary,
+                            this.leftBoundary,
+                            this.rightBoundary,
+                            this.framesPerMove,
+                            (this.currentDirection === DirectionEnum.Down || this.currentDirection === DirectionEnum.Up) ? this.previousDirection : this.currentDirection,
+                            DirectionEnum.Down,
+                            this.gameBoardCollisionCheck,
+                            this.onNewCentipedeGenerated);
+
+                        if (i < this.centipedeBody.length - 2) {
+                            // transfer the body across to the new centipede
+                            newCentipede.centipedeBody = this.centipedeBody.splice(i + 2, this.centipedeBody.length - (i + 2));
+                        }
+                        // finally remove the part of the centipede body that is the new head.
+                        this.centipedeBody.pop();
+                        this.onNewCentipedeGenerated(newCentipede);
+                        hit = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        return hit;
+    }
+}
