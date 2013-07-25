@@ -29,8 +29,8 @@ CentipedeBody.prototype.checkCollision = function(x, y) {
 };
 
 CentipedeBody.prototype.calculateAnimation = function(animation) {
-    var destX = this.prevX + this.dx;
-    var destY = this.prevY + this.dy;
+    var destX = this.prevX + (((animation + 1) % this.framesPerMove) * this.dx);
+    var destY = this.prevY + (((animation + 1) % this.framesPerMove) * this.dy);
 
     var spriteEnum = SpriteEnum.CentipedeBodyVertical1;
 
