@@ -1,43 +1,43 @@
 "use strict";
 gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings, KeyPressHandler, Utils) {
     return {
-    // TODO:
-    centipedeFramesPerMove: 2,
+        // TODO:
+        centipedeFramesPerMove: 2,
 
-    initialise: function(canvas, graphicsFile, gameBoardSize) {
-        GraphicsEngine.initialise(canvas, graphicsFile, gameBoardSize.scale);
-        GameBoard.initialise(gameBoardSize.width, gameBoardSize.height);
+        initialise: function(canvas, graphicsFile, gameBoardSize) {
+            GraphicsEngine.initialise(canvas, graphicsFile, gameBoardSize.scale);
+            GameBoard.initialise(gameBoardSize.width, gameBoardSize.height);
 
-        this.canvasWidth = gameBoardSize.width * gameBoardSize.scale * GlobalSettings.spriteSize;
-        this.canvasHeight = gameBoardSize.height * gameBoardSize.scale * GlobalSettings.spriteSize;
-        this.canvas = canvas;
+            this.canvasWidth = gameBoardSize.width * gameBoardSize.scale * GlobalSettings.spriteSize;
+            this.canvasHeight = gameBoardSize.height * gameBoardSize.scale * GlobalSettings.spriteSize;
+            this.canvas = canvas;
+            this.gameBoardSize = gameBoardSize;
 
-        this.bullets = [];
+            this.bullets = [];
 
-        var me = this;
+            var me = this;
 
-        this.centipedes = [];
-        this.centipedes.push(new Centipede(
-            Math.floor(gameBoardSize.width / 2),
-            0,
-            20,
-            (gameBoardSize.height - GlobalSettings.playerAreaHeight) + 1,
-            gameBoardSize.height - 1,
-            0,
-            gameBoardSize.width - 1,
-            this.centipedeFramesPerMove,
-            DirectionEnum.Down,
-            DirectionEnum.Right,
-            this.gameBoardCollisionCheck,
-            function(centipede) { me.generateNewCentipede(centipede)}
-        ));
+            this.centipedes = [];
+            this.centipedes.push(new Centipede(
+                Math.floor(gameBoardSize.width / 2),
+                0,
+                10,
+                (gameBoardSize.height - GlobalSettings.playerAreaHeight) + 1,
+                gameBoardSize.height - 1,
+                0,
+                gameBoardSize.width - 1,
+                this.centipedeFramesPerMove,
+                DirectionEnum.Down,
+                DirectionEnum.Right,
+                this.gameBoardCollisionCheck,
+                function(centipede) { me.generateNewCentipede(centipede)}
+            ));
 
-        this.player = new Player(
-            Math.floor(gameBoardSize.width / 2),
-            gameBoardSize.height - 1,
-            function(x, y) { me.fireBullet(x, y)});
-    },
-
+            this.player = new Player(
+                Math.floor(gameBoardSize.width / 2),
+                gameBoardSize.height - 1,
+                function(x, y) { me.fireBullet(x, y)});
+        },
 
         update: function(animation) {
             this.moveBullets();
@@ -176,6 +176,31 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
                     continue;
                 }
                 this.centipedes[i].move(animation, this.centipedeFramesPerMove);
+            }
+
+            // now check if we should add a new centipede in
+            if (this.centipedes.length > 0) {
+                var firstCentipede = this.centipedes[0];
+                if (firstCentipede.y === this.gameBoardSize.height - 1 &&
+                    (firstCentipede.x === this.gameBoardSize.width - 1 || firstCentipede.x === 0)) {
+
+                    var me = this;
+
+                    this.centipedes.push(new Centipede(
+                        0,
+                        (this.gameBoardSize.height - GlobalSettings.playerAreaHeight) + 1,
+                        0,
+                        (this.gameBoardSize.height - GlobalSettings.playerAreaHeight) + 1,
+                        this.gameBoardSize.height - 1,
+                        0,
+                        this.gameBoardSize.width - 1,
+                        this.centipedeFramesPerMove,
+                        DirectionEnum.Down,
+                        DirectionEnum.Right,
+                        this.gameBoardCollisionCheck,
+                        function(centipede) { me.generateNewCentipede(centipede)}
+                    ));
+                }
             }
         },
 
