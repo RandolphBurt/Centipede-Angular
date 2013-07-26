@@ -24,11 +24,7 @@ gameApp.factory("GameBoard", function(GlobalSettings, Utils, GraphicsEngine) {
 
         createMushroom: function (x, y) {
             if (!this.map[y][x]) {
-                if (inPlayerArea(y, this.height)) {
-                    this.mushroomsInPlayerArea++;
-                }
-
-                this.mushroomsOnScreen++;
+                this.incrementMushroomCount(y);
             }
 
             this.map[y][x] = 4;
@@ -41,7 +37,24 @@ gameApp.factory("GameBoard", function(GlobalSettings, Utils, GraphicsEngine) {
         },
 
         destroyMushroom: function(x, y) {
+            this.decrementMushroomCount(y);
             this.map[y][x] = 0;
+        },
+
+        incrementMushroomCount: function(y) {
+            if (inPlayerArea(y, this.height)) {
+                this.mushroomsInPlayerArea++;
+            }
+
+            this.mushroomsOnScreen++;
+        },
+
+        decrementMushroomCount: function(y) {
+            if (inPlayerArea(y, this.height)) {
+                this.mushroomsInPlayerArea--;
+            }
+
+            this.mushroomsOnScreen--;
         },
 
         playerAllowedToMove: function(currentX, currentY, direction) {
@@ -78,6 +91,9 @@ gameApp.factory("GameBoard", function(GlobalSettings, Utils, GraphicsEngine) {
                     this.map[y][x]++;
                 } else if (mushroomSpace > 0) {
                     this.map[y][x]--;
+                }
+                if (mushroomSpace !== 0 && this.map[y][x] === 0) {
+                    this.decrementMushroomCount(y);
                 }
             }
 
