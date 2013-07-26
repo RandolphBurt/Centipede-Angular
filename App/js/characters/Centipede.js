@@ -156,9 +156,12 @@ Centipede.prototype.checkCollision = function(x, y, causeSplit) {
             hit = true;
         }
 
-        for(var i = 0; i < this.centipedeBody.length; i++) {
-            if (this.centipedeBody[i].checkCollision(x, y)) {
-                hit = true;
+        if (!hit) {
+            for(var i = 0; i < this.centipedeBody.length; i++) {
+                if (this.centipedeBody[i].checkCollision(x, y)) {
+                    hit = true;
+                    break;
+                }
             }
         }
     } else {
@@ -210,7 +213,6 @@ Centipede.prototype.checkCollision = function(x, y, causeSplit) {
                 }
             }
         }
-
-        return hit;
     }
+    return hit;
 }

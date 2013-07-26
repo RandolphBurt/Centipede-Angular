@@ -16,13 +16,15 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
             this.centipedes = [];
             this.scoreMarkers = [];
 
+            this.centipedeUpperBoundary = (gameBoardSize.height - GlobalSettings.playerAreaHeight) + 1;
+
             var me = this;
 
             this.centipedes.push(new Centipede(
                 Math.floor(gameBoardSize.width / 2),
                 0,
                 10,
-                (gameBoardSize.height - GlobalSettings.playerAreaHeight) + 1,
+                this.centipedeUpperBoundary,
                 gameBoardSize.height - 1,
                 0,
                 gameBoardSize.width - 1,
@@ -230,22 +232,27 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
                 if (firstCentipede.y === this.gameBoardSize.height - 1 &&
                     (firstCentipede.x === this.gameBoardSize.width - 1 || firstCentipede.x === 0)) {
 
-                    var me = this;
+                    var lastCentipede = this.centipedes[this.centipedes.length - 1];
 
-                    this.centipedes.push(new Centipede(
-                        0,
-                        (this.gameBoardSize.height - GlobalSettings.playerAreaHeight) + 1,
-                        0,
-                        (this.gameBoardSize.height - GlobalSettings.playerAreaHeight) + 1,
-                        this.gameBoardSize.height - 1,
-                        0,
-                        this.gameBoardSize.width - 1,
-                        this.centipedeFramesPerMove,
-                        DirectionEnum.Down,
-                        DirectionEnum.Right,
-                        this.gameBoardCollisionCheck,
-                        function(centipede) { me.generateNewCentipede(centipede)}
-                    ));
+                    if (lastCentipede.x !== 0 || lastCentipede.y !== this.centipedeUpperBoundary) {
+
+                        var me = this;
+
+                        this.centipedes.push(new Centipede(
+                            -1, // start just off the screen as we will immediately move forward.
+                            this.centipedeUpperBoundary,
+                            0,
+                            this.centipedeUpperBoundary,
+                            this.gameBoardSize.height - 1,
+                            0,
+                            this.gameBoardSize.width - 1,
+                            this.centipedeFramesPerMove,
+                            DirectionEnum.Down,
+                            DirectionEnum.Right,
+                            this.gameBoardCollisionCheck,
+                            function(centipede) { me.generateNewCentipede(centipede)}
+                        ));
+                    }
                 }
             }
         },
