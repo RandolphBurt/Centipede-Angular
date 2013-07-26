@@ -10,6 +10,16 @@ gameApp.factory('GraphicsEngine', function(GlobalSettings) {
             this.spriteSheet.src = graphicsFile;
         },
 
+        fillRectangle: function(x, y, w, h, colour) {
+            this.canvas.fillStyle = colour;
+            this.canvas.fillRect(x * this.destinationWidth , y * this.destinationHeight, w * this.destinationWidth, h * this.destinationHeight);
+        },
+
+        drawText: function(x, y, text, colour) {
+            this.canvas.fillStyle = colour;
+            this.canvas.fillText(text, x * this.destinationWidth, y * this.destinationHeight)
+        },
+
         drawImage: function(x, y, image) {
             this.canvas.drawImage(
                 this.spriteSheet,

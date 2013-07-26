@@ -8,17 +8,16 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
             GraphicsEngine.initialise(canvas, graphicsFile, gameBoardSize.scale);
             GameBoard.initialise(gameBoardSize.width, gameBoardSize.height);
 
-            this.canvasWidth = gameBoardSize.width * gameBoardSize.scale * GlobalSettings.spriteSize;
-            this.canvasHeight = gameBoardSize.height * gameBoardSize.scale * GlobalSettings.spriteSize;
             this.canvas = canvas;
             this.gameBoardSize = gameBoardSize;
             this.gameState = gameState;
 
             this.bullets = [];
+            this.centipedes = [];
+            this.scoreMarkers = [];
 
             var me = this;
 
-            this.centipedes = [];
             this.centipedes.push(new Centipede(
                 Math.floor(gameBoardSize.width / 2),
                 0,
@@ -47,6 +46,7 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
             this.moveSnail(animation);
             this.moveCentipedes(animation);
             this.movePlayer(animation);
+            this.moveScoreMarkers(animation);
 
             if (animation == 0) {
                 this.checkCreateFlea();
@@ -61,6 +61,7 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
             this.drawSnail(animation);
             this.drawCentipedes(animation);
             this.drawBullets();
+            this.drawScoreMarkers();
         },
 
         fireBullet: function(x, y) {
@@ -124,17 +125,24 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
 
         incrementScore: function(x, y, increment) {
             this.gameState.Score += increment;
+            this.scoreMarkers.push(new ScoreMarker(x, y, increment));
         },
 
         drawBoard: function() {
-            this.canvas.fillStyle = 'black';
-            this.canvas.fillRect(0 ,0,  this.canvasWidth, this.canvasHeight);
+            GraphicsEngine.fillRectangle(0, 0, this.gameBoardSize.width, this.gameBoardSize.height, 'black');
             GameBoard.draw();
         },
 
         drawPlayer: function(animation) {
             var playerData = this.player.calculateAnimation(animation);
             GraphicsEngine.drawImage(playerData.x, playerData.y, playerData.image);
+        },
+
+        drawScoreMarkers: function() {
+            for (var i = 0; i < this.scoreMarkers.length; i++) {
+                var scoreMarkerData = this.scoreMarkers[i].calculateAnimation();
+                GraphicsEngine.drawText(scoreMarkerData.x, scoreMarkerData.y, scoreMarkerData.text, scoreMarkerData.colour);
+            }
         },
 
         drawBullets: function() {
@@ -189,6 +197,21 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
             }
 
             this.player.move(playerMove.direction, playerMove.isFiring);
+        },
+
+        moveScoreMarkers: function(animation) {
+            if (this.scoreMarkers.length === 0){
+                return;
+            }
+
+            for (var i = this.scoreMarkers.length - 1; i >= 0 ; i--) {
+                var score = this.scoreMarkers[i];
+                if (score.characterState === CharacterState.Dead) {
+                    this.scoreMarkers.splice(i, 1);
+                } else {
+                    score.move(animation);
+                }
+            }
         },
 
         moveCentipedes: function(animation) {
