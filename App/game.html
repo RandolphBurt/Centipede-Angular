@@ -6,11 +6,11 @@
 <body ng-controller="AppController" ng-keydown="keydown($event)" ng-keyup="keyup($event)"  style="background-color:black">
     <div style="color: red">
         <div ng-controller="ScoreBoardController">
-            <div>{{GameScore}}</div>
-            <div>{{HighScore}}</div>
+            <div>{{GameState.Score}}</div>
+            <div>{{GameState.HighScore}}</div>
             <button ng-click="IncrementScore(20)">Click</button>
             <div>
-                <game-engine score="GameScore" key-press-list="KeyPressList"/>
+                <game-engine game-state="GameState" key-press-list="KeyPressList"/>
             </div>
         </div>
     </div>

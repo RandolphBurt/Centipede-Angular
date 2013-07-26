@@ -4,7 +4,7 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
         // TODO:
         centipedeFramesPerMove: 2,
 
-        initialise: function(canvas, graphicsFile, gameBoardSize) {
+        initialise: function(canvas, graphicsFile, gameBoardSize, gameState) {
             GraphicsEngine.initialise(canvas, graphicsFile, gameBoardSize.scale);
             GameBoard.initialise(gameBoardSize.width, gameBoardSize.height);
 
@@ -12,6 +12,7 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
             this.canvasHeight = gameBoardSize.height * gameBoardSize.scale * GlobalSettings.spriteSize;
             this.canvas = canvas;
             this.gameBoardSize = gameBoardSize;
+            this.gameState = gameState;
 
             this.bullets = [];
 
@@ -72,35 +73,57 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
         },
 
         checkBulletCollision: function(x, y) {
-            var collision = false;
+            // we can only hit one thing.  If two things share the same space then only one gets destroyed.
+            // First thing destroyed is a mushroom - therefore if a centipede is falling straight down then it will
+            // still get nearer the bottom
+            var collisionScore = 0;
 
-            if (this.flea && this.flea.checkCollision(x, y)) {
+            var mushroomHit = GameBoard.checkCollision(x, y, true);
+
+            switch (mushroomHit) {
+                case BoardLocationEnum.Mushroom:
+                    collisionScore = GlobalSettings.scoreHitMushroom;
+                    break;
+
+                case BoardLocationEnum.PoisonMushroom:
+                    collisionScore = GlobalSettings.scoreHitPoisonMushroom;
+                    break;
+            }
+
+            if (!collisionScore && this.flea && this.flea.checkCollision(x, y)) {
                 this.flea = null;
-                collision = true;
+                collisionScore = GlobalSettings.scoreHitFlea;
             }
 
-            if (this.spider && this.spider.checkCollision(x, y)) {
+            if (!collisionScore && this.spider && this.spider.checkCollision(x, y)) {
                 this.spider = null;
-                collision = true;
+                collisionScore = GlobalSettings.scoreHitSpider;
             }
 
-            if (this.snail && this.snail.checkCollision(x, y)) {
+            if (!collisionScore && this.snail && this.snail.checkCollision(x, y)) {
                 this.snail = null;
-                collision = true;
+                collisionScore = GlobalSettings.scoreHitSnail;
             }
 
-            for (var i = 0; i < this.centipedes.length; i++) {
-                if (this.centipedes[i].checkCollision(x, y, true)) {
-                    GameBoard.createMushroom(x, y);
-                    collision = true;
+            if (!collisionScore) {
+                for (var i = 0; i < this.centipedes.length; i++) {
+                    if (this.centipedes[i].checkCollision(x, y, true)) {
+                        GameBoard.createMushroom(x, y);
+                        collisionScore = GlobalSettings.scoreHitCentipede;
+                        break;
+                    }
                 }
             }
 
-            if (GameBoard.checkCollision(x, y, true) !== BoardLocationEnum.Space) {
-                collision = true;
+            if (collisionScore) {
+                this.incrementScore(x, y, collisionScore);
             }
 
-            return collision;
+            return collisionScore;
+        },
+
+        incrementScore: function(x, y, increment) {
+            this.gameState.Score += increment;
         },
 
         drawBoard: function() {

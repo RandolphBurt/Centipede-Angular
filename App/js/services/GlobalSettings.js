@@ -17,6 +17,13 @@ gameApp.factory("GlobalSettings", function() {
        spiderCreationChance: 25,
        snailCreationChance: 200,
 
-       maxBulletsOnScreen: 5
+       maxBulletsOnScreen: 5,
+
+       scoreHitMushroom: 10,
+       scoreHitPoisonMushroom: 25,
+       scoreHitCentipede: 100,
+       scoreHitSpider: 1000,
+       scoreHitFlea: 250,
+       scoreHitSnail: 500
    }
 });
