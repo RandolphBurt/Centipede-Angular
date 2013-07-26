@@ -1,6 +1,8 @@
 "use strict";
 
 var CharacterState = {
-    Alive: 0,
-    Dead: 1
+    Active: 0,
+    ExplosionStart: 1,
+    ExplosionEnd: 2,
+    Dead: 3
 }

@@ -211,7 +211,7 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
 
                 bullet.move();
 
-                if (bullet.bulletState !== BulletState.Dead) {
+                if (bullet.bulletState !== CharacterState.Dead) {
                     activeBullets.push(bullet)
                 }
             }

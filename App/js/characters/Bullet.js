@@ -3,30 +3,30 @@ function Bullet(x, y, checkCollision) {
     this.x = x;
     this.y = y;
     this.checkCollision = checkCollision;
-    this.bulletState = BulletState.Active;
+    this.bulletState = CharacterState.Alive;
 
     if (this.checkCollision(x, y)) {
-        this.bulletState = BulletState.ExplosionStart;
+        this.bulletState = CharacterState.ExplosionStart;
     };
 };
 
 Bullet.prototype.move = function() {
-    if (this.bulletState === BulletState.Active) {
+    if (this.bulletState === CharacterState.Alive) {
         this.y--;
     }
 
-    if (this.y < 0 || this.bulletState === BulletState.ExplosionEnd) {
-        this.bulletState = BulletState.Dead;
-    } else if (this.bulletState === BulletState.ExplosionStart) {
-        this.bulletState = BulletState.ExplosionEnd;
+    if (this.y < 0 || this.bulletState === CharacterState.ExplosionEnd) {
+        this.bulletState = CharacterState.Dead;
+    } else if (this.bulletState === CharacterState.ExplosionStart) {
+        this.bulletState = CharacterState.ExplosionEnd;
     } else if (this.checkCollision(this.x, this.y)) {
-        this.bulletState = BulletState.ExplosionStart;
+        this.bulletState = CharacterState.ExplosionStart;
     }
 };
 
 Bullet.prototype.calculateAnimation = function() {
     return {
-        image: this.bulletState === BulletState.Active ? SpriteEnum.Bullet : SpriteEnum.Explosion,
+        image: this.bulletState === CharacterState.Alive ? SpriteEnum.Bullet : SpriteEnum.Explosion,
         x: this.x,
         y: this.y
     };
