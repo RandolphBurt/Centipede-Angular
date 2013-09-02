@@ -1,6 +1,6 @@
 'use strict';
 
-gameApp.directive('gameEngine', function($timeout, GameEngine) {
+gameApp.directive('gameEngine', function($timeout, GameEngine, GlobalSettings) {
     return {
         restrict: 'E',
         template: '<canvas id="gameCanvas" width="600" height="600" style="border:1px solid #000000;"></canvas>',
@@ -12,7 +12,8 @@ gameApp.directive('gameEngine', function($timeout, GameEngine) {
             var animation = 0;
             var date = new Date();
             var canvas = element.find('canvas')[0].getContext("2d");
-            GameEngine.initialise(canvas, 'img/graphics.png', { width: 30, height: 30, scale: 1 }, scope.gameState);
+
+            GameEngine.initialise(canvas, 'img/graphics.png', { width: GlobalSettings.gameBoardWidth, height: GlobalSettings.gameBoardHeight, scale: 1 }, scope.gameState);
 
             function gameLoop() {
                 var nextTick = date.getTime() + 60;
