@@ -1,9 +1,6 @@
 "use strict";
 gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings, KeyPressHandler, Utils) {
     return {
-        // TODO:
-        centipedeFramesPerMove: 2,
-
         initialise: function(canvas, graphicsFile, gameBoardSize, gameState) {
             GraphicsEngine.initialise(canvas, graphicsFile, gameBoardSize.scale);
             GameBoard.initialise(gameBoardSize.width, gameBoardSize.height);
@@ -28,7 +25,7 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
                 gameBoardSize.height - 1,
                 0,
                 gameBoardSize.width - 1,
-                this.centipedeFramesPerMove,
+                GlobalSettings.centipedeFramesPerMoveNormalSpeed,
                 DirectionEnum.Down,
                 DirectionEnum.Right,
                 this.gameBoardCollisionCheck,
@@ -223,11 +220,11 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
                     this.centipedes.splice(i, 1);
                     continue;
                 }
-                this.centipedes[i].move(animation, this.centipedeFramesPerMove);
+                this.centipedes[i].move(animation);
             }
 
             // now check if we should add a new centipede in
-            if (this.centipedes.length > 0) {
+            if (this.centipedes.length > 0 && animation === 0) {
                 var firstCentipede = this.centipedes[0];
                 if (firstCentipede.y === this.gameBoardSize.height - 1 &&
                     (firstCentipede.x === this.gameBoardSize.width - 1 || firstCentipede.x === 0)) {
@@ -246,7 +243,7 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
                             this.gameBoardSize.height - 1,
                             0,
                             this.gameBoardSize.width - 1,
-                            this.centipedeFramesPerMove,
+                            1,
                             DirectionEnum.Down,
                             DirectionEnum.Right,
                             this.gameBoardCollisionCheck,

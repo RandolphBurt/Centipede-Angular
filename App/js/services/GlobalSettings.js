@@ -5,6 +5,9 @@ gameApp.constant("GlobalSettings", {
    spriteSheetWidth: 4,
    playerAreaHeight: 6,
 
+   centipedeFramesPerMoveNormalSpeed: 2,
+   centipedeFramesPerMoveHighSpeed: 1,
+
    // board creation
    mushroomChanceNonPlayerArea: 10,
    mushroomChancePlayerArea: 40,
