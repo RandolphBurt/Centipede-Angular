@@ -8,6 +8,7 @@ gameApp.directive('gameEngine', function($timeout, GameEngine) {
             gameState: '='
         },
         link: function(scope, element, attrs, controller) {
+            var timer;
             var animation = 0;
             var date = new Date();
             var canvas = element.find('canvas')[0].getContext("2d");
@@ -24,10 +25,16 @@ gameApp.directive('gameEngine', function($timeout, GameEngine) {
 
                 GameEngine.update(animation);
 
-                $timeout(gameLoop, Math.max(0, nextTick - date.getTime()));
+                timer = $timeout(gameLoop, Math.max(0, nextTick - date.getTime()));
             }
 
             gameLoop();
+
+            scope.$on("$destroy", function() {
+               if (timer) {
+                   $timeout.cancel(timer);
+               }
+            });
         }
     }
 });
