@@ -53,6 +53,8 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
                 this.checkCreateSnail();
             }
 
+            this.checkPlayerCollision();
+
             this.drawBoard();
             this.drawPlayer(animation);
             this.drawFlea(animation);
@@ -61,6 +63,31 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
             this.drawCentipedes(animation);
             this.drawBullets();
             this.drawScoreMarkers();
+        },
+
+        checkPlayerCollision: function() {
+            if (this.player.playerState != CharacterState.Active) {
+                return;
+            }
+
+            var playerDead = false;
+
+            if (this.spider && this.spider.checkCollision(this.player.x, this.player.y)) {
+                playerDead = true;
+            } else if (this.flea && this.flea.checkCollision(this.player.x, this.player.y)) {
+                playerDead = true;
+            } else {
+                for (var i = 0; i < this.centipedes.length; i++) {
+                    if (this.centipedes[i].checkCollision(this.player.x, this.player.y, false)) {
+                        playerDead = true;
+                        break;
+                    }
+                }
+            }
+
+            if (playerDead) {
+                this.player.die();
+            }
         },
 
         fireBullet: function(x, y) {

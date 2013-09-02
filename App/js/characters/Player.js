@@ -7,10 +7,26 @@ function Player(x, y, fireBullet) {
     this.dy = 0;
     this.direction = DirectionEnum.None;
     this.isFiring = false;
+    this.playerState = CharacterState.Active;
     this.fireBullet = fireBullet;
 };
 
+Player.prototype.die = function() {
+    this.playerState = CharacterState.ExplosionStart;
+};
+
 Player.prototype.move = function(direction, isFiring){
+    if (this.playerState != CharacterState.Active) {
+        switch (this.playerState) {
+            case CharacterState.ExplosionStart:
+                this.playerState = CharacterState.ExplosionEnd;
+                break;
+            case CharacterState.ExplosionEnd:
+                this.playerState = CharacterState.Dead;
+        }
+        return;
+    }
+
     this.prevX = this.x;
     this.prevY = this.y;
     this.direction = direction;
@@ -53,25 +69,35 @@ Player.prototype.move = function(direction, isFiring){
 };
 
 Player.prototype.calculateAnimation = function(animation) {
-    var spriteEnum = SpriteEnum.PlayerStandStill;
-    var destX = this.prevX + ((animation % 2) * this.dx);
-    var destY = this.prevY + ((animation % 2) * this.dy);
+    var destX;
+    var destY;
+    var spriteEnum;
 
-    switch (this.direction)
-    {
-        case DirectionEnum.Right:
-            spriteEnum = SpriteEnum.PlayerWalkRight1 + animation;
-            break;
+    if (this.playerState != CharacterState.Active) {
+        spriteEnum = SpriteEnum.Explosion;
+        destX = this.x;
+        destY = this.y;
+    } else {
+        spriteEnum = SpriteEnum.PlayerStandStill;
+        destX = this.prevX + ((animation % 2) * this.dx);
+        destY = this.prevY + ((animation % 2) * this.dy);
 
-        case DirectionEnum.Left:
-            spriteEnum = SpriteEnum.PlayerWalkLeft1 + animation;
-            break;
+        switch (this.direction)
+        {
+            case DirectionEnum.Right:
+                spriteEnum = SpriteEnum.PlayerWalkRight1 + animation;
+                break;
 
-        case DirectionEnum.None:
-            if (this.isFiring) {
-                spriteEnum = SpriteEnum.PlayerFire;
-            }
-            break;
+            case DirectionEnum.Left:
+                spriteEnum = SpriteEnum.PlayerWalkLeft1 + animation;
+                break;
+
+            case DirectionEnum.None:
+                if (this.isFiring) {
+                    spriteEnum = SpriteEnum.PlayerFire;
+                }
+                break;
+        }
     }
 
     return {
