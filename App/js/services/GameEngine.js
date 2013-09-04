@@ -1,41 +1,46 @@
 "use strict";
-gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings, KeyPressHandler, Utils) {
+gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings, KeyPressHandler, Utils, GameState) {
     return {
-        initialise: function(canvas, graphicsFile, gameBoardSize, gameState) {
-            GraphicsEngine.initialise(canvas, graphicsFile, gameBoardSize.scale);
-            GameBoard.initialise(gameBoardSize.width, gameBoardSize.height);
+        initialise: function(canvas, graphicsFile) {
+            GraphicsEngine.initialise(canvas, graphicsFile);
+            GameBoard.initialise();
 
             this.canvas = canvas;
-            this.gameBoardSize = gameBoardSize;
-            this.gameState = gameState;
 
             this.bullets = [];
             this.centipedes = [];
             this.scoreMarkers = [];
+            this.livesAnimationCount = 0;
 
-            this.centipedeUpperBoundary = (gameBoardSize.height - GlobalSettings.playerAreaHeight) + 1;
+            this.centipedeUpperBoundary = (GlobalSettings.gameBoardHeight - GlobalSettings.playerAreaHeight) + 1;
 
             var me = this;
 
+            this.player = new Player(
+                Math.floor(GlobalSettings.gameBoardWidth / 2),
+                GlobalSettings.gameBoardHeight - 1,
+                function(x, y) { me.fireBullet(x, y)});
+
+            this.initialiseLevel();
+        },
+
+        initialiseLevel: function() {
+            var me = this;
+
             this.centipedes.push(new Centipede(
-                Math.floor(gameBoardSize.width / 2),
+                Math.floor(GlobalSettings.gameBoardWidth / 2),
                 0,
                 10,
                 this.centipedeUpperBoundary,
-                gameBoardSize.height - 1,
+                GlobalSettings.gameBoardHeight - 1,
                 0,
-                gameBoardSize.width - 1,
-                GlobalSettings.centipedeFramesPerMoveNormalSpeed,
+                GlobalSettings.gameBoardWidth - 1,
+                GameState.isCurrentLevelHighSpeed() ? GlobalSettings.centipedeFramesPerMoveHighSpeed: GlobalSettings.centipedeFramesPerMoveNormalSpeed,
                 DirectionEnum.Down,
                 DirectionEnum.Right,
                 this.gameBoardCollisionCheck,
                 function(centipede) { me.generateNewCentipede(centipede)}
             ));
-
-            this.player = new Player(
-                Math.floor(gameBoardSize.width / 2),
-                gameBoardSize.height - 1,
-                function(x, y) { me.fireBullet(x, y)});
         },
 
         update: function(animation) {
@@ -55,6 +60,8 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
 
             this.checkPlayerCollision();
 
+            this.blankScreen();
+            this.drawScoreBoard(animation);
             this.drawBoard();
             this.drawPlayer(animation);
             this.drawFlea(animation);
@@ -150,31 +157,117 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
         },
 
         incrementScore: function(x, y, increment) {
-            this.gameState.Score += increment;
+            GameState.incrementScore(increment);
             this.scoreMarkers.push(new ScoreMarker(x, y, increment));
         },
 
+        blankScreen: function() {
+            GraphicsEngine.blankScreen();
+        },
+
+        drawScoreBoard: function(animation) {
+            if (animation == 0) {
+                this.livesAnimationCount++;
+
+                if (this.livesAnimationCount == 9) {
+                    this.livesAnimationCount = 0;
+                }
+            }
+
+            var animationOffset = this.livesAnimationCount;
+            if (this.livesAnimationCount > 4) {
+                animationOffset = 9 - this.livesAnimationCount;
+            }
+
+
+            GraphicsEngine.drawText(
+                GlobalSettings.scoreBoardLivesXPositionText,
+                GlobalSettings.scoreBoardTitleYPosition,
+                "Lives",
+                GlobalSettings.scoreBoardTitleFontColour,
+                GlobalSettings.scoreBoardFont);
+
+            GraphicsEngine.drawText(
+                GlobalSettings.scoreBoardScoreXPosition,
+                GlobalSettings.scoreBoardTitleYPosition,
+                "Score",
+                GlobalSettings.scoreBoardTitleFontColour,
+                GlobalSettings.scoreBoardFont);
+
+            GraphicsEngine.drawText(
+                GlobalSettings.scoreBoardLevelXPosition,
+                GlobalSettings.scoreBoardTitleYPosition,
+                "Level",
+                GlobalSettings.scoreBoardTitleFontColour,
+                GlobalSettings.scoreBoardFont);
+
+            GraphicsEngine.drawText(
+                GlobalSettings.scoreBoardHighScoreXPosition,
+                GlobalSettings.scoreBoardTitleYPosition,
+                "High",
+                GlobalSettings.scoreBoardTitleFontColour,
+                GlobalSettings.scoreBoardFont);
+
+            GraphicsEngine.drawText(
+                GlobalSettings.scoreBoardScoreXPosition,
+                GlobalSettings.scoreBoardContentYPosition,
+                GameState.score,
+                GlobalSettings.scoreBoardContentFontColour,
+                GlobalSettings.scoreBoardFont);
+
+            GraphicsEngine.drawText(
+                GlobalSettings.scoreBoardLevelXPosition,
+                GlobalSettings.scoreBoardContentYPosition,
+                GameState.level,
+                GlobalSettings.scoreBoardContentFontColour,
+                GlobalSettings.scoreBoardFont);
+
+            GraphicsEngine.drawText(
+                GlobalSettings.scoreBoardHighScoreXPosition,
+                GlobalSettings.scoreBoardContentYPosition,
+                GameState.highScore,
+                GlobalSettings.scoreBoardContentFontColour,
+                GlobalSettings.scoreBoardFont);
+
+            for (var i = 0; i < GameState.lives - 1; i++) {
+                GraphicsEngine.drawImage(
+                    GlobalSettings.scoreBoardLivesXPositionImage + (GlobalSettings.scoreBoardLivesOffset * i) + (animationOffset * 4),
+                    GlobalSettings.scoreBoardLivesYPosition,
+                    SpriteEnum.PlayerWalkRight1 + this.livesAnimationCount);
+            }
+        },
+
         drawBoard: function() {
-            GraphicsEngine.fillRectangle(0, 0, this.gameBoardSize.width, this.gameBoardSize.height, 'black');
             GameBoard.draw();
         },
 
         drawPlayer: function(animation) {
             var playerData = this.player.calculateAnimation(animation);
-            GraphicsEngine.drawImage(playerData.x, playerData.y, playerData.image);
+            GraphicsEngine.drawImage(
+                GraphicsEngine.convertGameXCoordinateToPixels(playerData.x),
+                GraphicsEngine.convertGameYCoordinateToPixels(playerData.y),
+                playerData.image);
         },
 
         drawScoreMarkers: function() {
             for (var i = 0; i < this.scoreMarkers.length; i++) {
                 var scoreMarkerData = this.scoreMarkers[i].calculateAnimation();
-                GraphicsEngine.drawText(scoreMarkerData.x, scoreMarkerData.y, scoreMarkerData.text, scoreMarkerData.colour);
+                GraphicsEngine.drawText(
+                    GraphicsEngine.convertGameXCoordinateToPixels(scoreMarkerData.x),
+                    GraphicsEngine.convertGameYCoordinateToPixels(scoreMarkerData.y),
+                    scoreMarkerData.text,
+                    scoreMarkerData.colour,
+                    GlobalSettings.scoreMarkerFont);
             }
         },
 
         drawBullets: function() {
             for (var i = 0; i < this.bullets.length; i++) {
                 var bulletData = this.bullets[i].calculateAnimation();
-                GraphicsEngine.drawImage(bulletData.x, bulletData.y, bulletData.image);
+                GraphicsEngine.drawImage(
+                    GraphicsEngine.convertGameXCoordinateToPixels(bulletData.x),
+                    GraphicsEngine.convertGameYCoordinateToPixels(bulletData.y),
+                    bulletData.image);
             }
         },
 
@@ -183,7 +276,10 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
                 var centipedeData = this.centipedes[i].calculateAnimation(animation);
 
                 for (var c in centipedeData) {
-                    GraphicsEngine.drawImage(centipedeData[c].x, centipedeData[c].y, centipedeData[c].image);
+                    GraphicsEngine.drawImage(
+                        GraphicsEngine.convertGameXCoordinateToPixels(centipedeData[c].x),
+                        GraphicsEngine.convertGameYCoordinateToPixels(centipedeData[c].y),
+                        centipedeData[c].image);
                 }
             }
         },
@@ -191,23 +287,38 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
         drawFlea: function(animation) {
             if (this.flea) {
                 var fleaData = this.flea.calculateAnimation(animation);
-                GraphicsEngine.drawImage(fleaData.x, fleaData.y, fleaData.image);
+                GraphicsEngine.drawImage(
+                    GraphicsEngine.convertGameXCoordinateToPixels(fleaData.x),
+                    GraphicsEngine.convertGameYCoordinateToPixels(fleaData.y),
+                    fleaData.image);
             }
         },
 
         drawSpider: function(animation) {
             if (this.spider) {
                 var spiderData = this.spider.calculateAnimation(animation);
-                GraphicsEngine.drawImage(spiderData[0].x, spiderData[0].y, spiderData[0].image);
-                GraphicsEngine.drawImage(spiderData[1].x, spiderData[1].y, spiderData[1].image);
+                GraphicsEngine.drawImage(
+                    GraphicsEngine.convertGameXCoordinateToPixels(spiderData[0].x),
+                    GraphicsEngine.convertGameYCoordinateToPixels(spiderData[0].y),
+                    spiderData[0].image);
+                GraphicsEngine.drawImage(
+                    GraphicsEngine.convertGameXCoordinateToPixels(spiderData[1].x),
+                    GraphicsEngine.convertGameYCoordinateToPixels(spiderData[1].y),
+                    spiderData[1].image);
             }
         },
 
         drawSnail: function(animation) {
             if (this.snail) {
                 var snailData = this.snail.calculateAnimation(animation);
-                GraphicsEngine.drawImage(snailData[0].x, snailData[0].y, snailData[0].image);
-                GraphicsEngine.drawImage(snailData[1].x, snailData[1].y, snailData[1].image);
+                GraphicsEngine.drawImage(
+                    GraphicsEngine.convertGameXCoordinateToPixels(snailData[0].x),
+                    GraphicsEngine.convertGameYCoordinateToPixels(snailData[0].y),
+                    snailData[0].image);
+                GraphicsEngine.drawImage(
+                    GraphicsEngine.convertGameXCoordinateToPixels(snailData[1].x),
+                    GraphicsEngine.convertGameYCoordinateToPixels(snailData[1].y),
+                    snailData[1].image);
             }
         },
 
@@ -253,8 +364,8 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
             // now check if we should add a new centipede in
             if (this.centipedes.length > 0 && animation === 0) {
                 var firstCentipede = this.centipedes[0];
-                if (firstCentipede.y === this.gameBoardSize.height - 1 &&
-                    (firstCentipede.x === this.gameBoardSize.width - 1 || firstCentipede.x === 0)) {
+                if (firstCentipede.y === GlobalSettings.gameBoardHeight - 1 &&
+                    (firstCentipede.x === GlobalSettings.gameBoardWidth - 1 || firstCentipede.x === 0)) {
 
                     var lastCentipede = this.centipedes[this.centipedes.length - 1];
 
@@ -267,10 +378,10 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
                             this.centipedeUpperBoundary,
                             0,
                             this.centipedeUpperBoundary,
-                            this.gameBoardSize.height - 1,
+                            GlobalSettings.gameBoardHeight - 1,
                             0,
-                            this.gameBoardSize.width - 1,
-                            1,
+                            GlobalSettings.gameBoardWidth - 1,
+                            GlobalSettings.centipedeFramesPerMoveNormalSpeed,
                             DirectionEnum.Down,
                             DirectionEnum.Right,
                             this.gameBoardCollisionCheck,
@@ -298,7 +409,7 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
 
         moveSpider: function(animation) {
             if (this.spider) {
-                if (this.spider.x < -1 || this.spider.x >= GameBoard.width) {
+                if (this.spider.x < -1 || this.spider.x >= GlobalSettings.gameBoardWidth) {
                     this.spider = null;
                 } else {
                     this.spider.move(animation);
@@ -308,7 +419,7 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
 
         moveSnail: function(animation) {
             if (this.snail) {
-                if (this.snail.x >= GameBoard.width) {
+                if (this.snail.x >= GlobalSettings.gameBoardWidth) {
                     this.snail = null;
                 } else {
                     this.snail.move(animation);
@@ -318,7 +429,7 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
 
         moveFlea: function(animation) {
             if (this.flea) {
-                if (this.flea.y >= GameBoard.height) {
+                if (this.flea.y >= GlobalSettings.gameBoardHeight) {
                     this.flea = null;
                 } else {
                     this.flea.move(animation);
@@ -332,7 +443,7 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
             }
 
             if (Utils.random(GlobalSettings.snailCreationChance) === 0) {
-                var y = Utils.random(GameBoard.height - GlobalSettings.playerAreaHeight);
+                var y = Utils.random(GlobalSettings.gameBoardHeight - GlobalSettings.playerAreaHeight);
 
                 this.snail = new Snail(y, this.onSnailMoved);
             }
@@ -344,10 +455,10 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
             }
 
             if (Utils.random(GlobalSettings.spiderCreationChance) === 0) {
-                var x = this.player.x > (GameBoard.width / 2) ? 0 : GameBoard.width - 1;
-                var y = (GameBoard.height - GlobalSettings.playerAreaHeight) + Utils.random(GlobalSettings.playerAreaHeight);
+                var x = this.player.x > (GlobalSettings.gameBoardWidth / 2) ? 0 : GlobalSettings.gameBoardWidth - 1;
+                var y = (GlobalSettings.gameBoardHeight - GlobalSettings.playerAreaHeight) + Utils.random(GlobalSettings.playerAreaHeight);
 
-                this.spider = new Spider(x, y, GameBoard.height -1, (GameBoard.height - GlobalSettings.playerAreaHeight) + 1, this.onSpiderMoved);
+                this.spider = new Spider(x, y, GlobalSettings.gameBoardHeight -1, (GlobalSettings.gameBoardHeight - GlobalSettings.playerAreaHeight) + 1, this.onSpiderMoved);
             }
         },
 
@@ -362,7 +473,7 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
             }
 
             if (Utils.random(GlobalSettings.fleaCreationChance) === 0) {
-                var x = Utils.random(GameBoard.width);
+                var x = Utils.random(GlobalSettings.gameBoardWidth);
                 this.flea = new Flea(x, this.onFleaMoved);
             }
         },
@@ -376,7 +487,7 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
         },
 
         onFleaMoved: function(x, prevY) {
-            if (prevY < GameBoard.height - 1) {
+            if (prevY < GlobalSettings.gameBoardHeight - 1) {
                 // Not allowed to put a mushroom on the bottom row
                 if (Math.floor(Math.random() * 3) === 0) {
                     GameBoard.createMushroom(x, prevY);
@@ -385,17 +496,17 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
         },
 
         onSpiderMoved: function(prevX, prevY, x, y) {
-            if (x >= 0 && x < GameBoard.width) {
+            if (x >= 0 && x < GlobalSettings.gameBoardWidth) {
                 GameBoard.destroyMushroom(x, y);
 
-                if (x >= 0 && x < GameBoard.width - 1) {
+                if (x >= 0 && x < GlobalSettings.gameBoardWidth - 1) {
                     GameBoard.destroyMushroom(x + 1, y);
                 }
             }
         },
 
         onSnailMoved: function(prevX, x, y) {
-            if (x < GameBoard.width) {
+            if (x < GlobalSettings.gameBoardWidth) {
                 GameBoard.poisonMushroom(x, y);
             }
         }

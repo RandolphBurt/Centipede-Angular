@@ -1,23 +1,30 @@
 gameApp.factory('GraphicsEngine', function(GlobalSettings) {
     return {
-        initialise: function(canvasContext, graphicsFile, scale) {
+        initialise: function(canvasContext, graphicsFile) {
             this.spriteWidth = GlobalSettings.spriteSize;
-            this.spriteHeight = 20;
-            this.destinationWidth = this.spriteWidth * scale;
-            this.destinationHeight = this.spriteHeight * scale;
+            this.spriteHeight = GlobalSettings.spriteSize;
             this.canvas = canvasContext;
             this.spriteSheet = new Image();
             this.spriteSheet.src = graphicsFile;
         },
 
-        fillRectangle: function(x, y, w, h, colour) {
-            this.canvas.fillStyle = colour;
-            this.canvas.fillRect(x * this.destinationWidth , y * this.destinationHeight, w * this.destinationWidth, h * this.destinationHeight);
+        convertGameXCoordinateToPixels: function(x) {
+            return x * GlobalSettings.spriteSize;
         },
 
-        drawText: function(x, y, text, colour) {
+        convertGameYCoordinateToPixels: function(y) {
+            return (y * GlobalSettings.spriteSize) + GlobalSettings.scoreBoardArea;
+        },
+
+        blankScreen: function() {
+            this.canvas.fillStyle = GlobalSettings.gameBoardBackgroundColour;
+            this.canvas.fillRect(0, 0, GlobalSettings.gameBoardWidth * this.spriteWidth, GlobalSettings.scoreBoardArea + (GlobalSettings.gameBoardHeight * this.spriteHeight));
+        },
+
+        drawText: function(x, y, text, colour, font) {
             this.canvas.fillStyle = colour;
-            this.canvas.fillText(text, x * this.destinationWidth, y * this.destinationHeight)
+            this.canvas.font = font;
+            this.canvas.fillText(text, x, y)
         },
 
         drawImage: function(x, y, image) {
@@ -27,10 +34,10 @@ gameApp.factory('GraphicsEngine', function(GlobalSettings) {
                 this.spriteHeight * Math.floor(image / GlobalSettings.spriteSheetWidth),
                 this.spriteWidth,
                 this.spriteHeight,
-                x * this.destinationWidth,
-                y * this.destinationHeight,
-                this.destinationWidth,
-                this.destinationHeight);
+                x,
+                y,
+                this.spriteWidth,
+                this.spriteHeight);
         }
     }
 });
