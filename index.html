@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="gameApp">
+<head>
+    <title>Centipede</title>
+</head>
+<body ng-controller="AppController" ng-keydown="keydown($event)" ng-keyup="keyup($event)"  style="background-color:darkgrey">
+    <div game-engine/>
+
+    <script src="app/lib/angular.js"></script>
+    <script src="app/lib/ui-bootstrap.js"></script>
+    <script src="app/gameApp.js"></script>
+    <script src="app/js/CharacterState.js"></script>
+    <script src="app/js/BoardLocationEnum.js"></script>
+    <script src="app/js/DirectionEnum.js"></script>
+    <script src="app/js/SpriteEnum.js"></script>
+    <script src="app/js/characters/ScoreMarker.js"></script>
+    <script src="app/js/characters/Player.js"></script>
+    <script src="app/js/characters/Bullet.js"></script>
+    <script src="app/js/characters/Centipede.js"></script>
+    <script src="app/js/characters/CentipedeBody.js"></script>
+    <script src="app/js/characters/Flea.js"></script>
+    <script src="app/js/characters/Spider.js"></script>
+    <script src="app/js/characters/Snail.js"></script>
+    <script src="app/js/services/GlobalSettings.js"></script>
+    <script src="app/js/services/Utils.js"></script>
+    <script src="app/js/services/KeyPressHandler.js"></script>
+    <script src="app/js/services/GraphicsEngine.js"></script>
+    <script src="app/js/services/GameBoard.js"></script>
+    <script src="app/js/services/GameEngine.js"></script>
+    <script src="app/js/directives/GameEngineDirective.js"></script>
+    <script src="app/js/controllers/AppController.js"></script>
+    <script src="app/js/services/GameState.js"></script>
+</body>
+</html>
