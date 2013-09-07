@@ -11,7 +11,7 @@ gameApp.directive('gameEngine', function($timeout, GameEngine) {
             var date = new Date();
             var canvas = element.find('canvas')[0].getContext("2d");
 
-            GameEngine.initialise(canvas, 'img/graphics.png');
+            GameEngine.initialise(canvas, 'App/img/graphics.png');
 
             function gameLoop() {
                 var nextTick = date.getTime() + 50;
