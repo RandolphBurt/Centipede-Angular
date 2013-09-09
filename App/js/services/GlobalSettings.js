@@ -33,6 +33,7 @@ gameApp.constant("GlobalSettings", {
     mushroomChancePlayerArea: 40,
 
     minMushroomsBeforeFleaCreated: 40,
+    maxMushroomsAllowed: 140,
     minMushroomsInPlayerAreaBeforeFleaCreated: 5,
 
     fleaCreationChance: 100,

@@ -472,7 +472,8 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
                 return;
             }
 
-            if (Utils.random(GlobalSettings.fleaCreationChance) === 0) {
+            if (GameBoard.mushroomsOnScreen < GlobalSettings.maxMushroomsAllowed &&
+                (GameBoard.mushroomsOnScreen < GlobalSettings.minMushroomsBeforeFleaCreated || Utils.random(GlobalSettings.fleaCreationChance) === 0)) {
                 var x = Utils.random(GlobalSettings.gameBoardWidth);
                 this.flea = new Flea(x, this.onFleaMoved);
             }
