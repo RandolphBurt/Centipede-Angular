@@ -498,10 +498,10 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
 
         onSpiderMoved: function(prevX, prevY, x, y) {
             if (x >= 0 && x < GlobalSettings.gameBoardWidth) {
-                GameBoard.checkCollision(x, y, true);
+                GameBoard.destroyMushroom(x, y);
 
                 if (x >= 0 && x < GlobalSettings.gameBoardWidth - 1) {
-                    GameBoard.checkCollision(x + 1, y, true);
+                    GameBoard.destroyMushroom(x + 1, y);
                 }
             }
         },

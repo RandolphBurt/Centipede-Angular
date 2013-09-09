@@ -38,6 +38,13 @@ gameApp.factory("GameBoard", function(GlobalSettings, Utils, GraphicsEngine, Gam
             }
         },
 
+        destroyMushroom: function(x, y) {
+            if (this.checkCollision(x, y) !== BoardLocationEnum.Space) {
+                this.decrementMushroomCount(y);
+                this.map[y][x] = BoardLocationEnum.Space;
+            }
+        },
+
         incrementMushroomCount: function(y) {
             if (inPlayerArea(y, GlobalSettings.gameBoardHeight)) {
                 this.mushroomsInPlayerArea++;
