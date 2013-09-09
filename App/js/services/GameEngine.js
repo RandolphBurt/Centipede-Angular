@@ -38,6 +38,7 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
                 GameState.isCurrentLevelHighSpeed() ? GlobalSettings.centipedeFramesPerMoveHighSpeed: GlobalSettings.centipedeFramesPerMoveNormalSpeed,
                 DirectionEnum.Down,
                 DirectionEnum.Right,
+                false,
                 this.gameBoardCollisionCheck,
                 function(centipede) { me.generateNewCentipede(centipede)}
             ));
@@ -384,6 +385,7 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
                             GlobalSettings.centipedeFramesPerMoveNormalSpeed,
                             DirectionEnum.Down,
                             DirectionEnum.Right,
+                            false,
                             this.gameBoardCollisionCheck,
                             function(centipede) { me.generateNewCentipede(centipede)}
                         ));

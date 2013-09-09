@@ -1,6 +1,6 @@
 "use strict";
 
-function Centipede(x, y, bodyLength, upBoundary, downBoundary, leftBoundary, rightBoundary, framesPerMove, previousDirection, currentDirection, gameBoardCollisionCheck, onNewCentipedeGenerated) {
+function Centipede(x, y, bodyLength, upBoundary, downBoundary, leftBoundary, rightBoundary, framesPerMove, previousDirection, currentDirection, fallingStraightDown, gameBoardCollisionCheck, onNewCentipedeGenerated) {
     this.upBoundary = upBoundary;
     this.downBoundary = downBoundary;
     this.rightBoundary = rightBoundary;
@@ -9,7 +9,7 @@ function Centipede(x, y, bodyLength, upBoundary, downBoundary, leftBoundary, rig
     this.y = y;
     this.previousDirection = previousDirection;
     this.currentDirection = currentDirection;
-    this.fallingStraightDown = false;
+    this.fallingStraightDown = fallingStraightDown;
     this.framesPerMove = framesPerMove;
     this.gameBoardCollisionCheck = gameBoardCollisionCheck;
     this.onNewCentipedeGenerated = onNewCentipedeGenerated;
@@ -197,6 +197,7 @@ Centipede.prototype.checkCollision = function(x, y, causeSplit) {
                             this.framesPerMove,
                             (this.currentDirection === DirectionEnum.Down || this.currentDirection === DirectionEnum.Up) ? this.previousDirection : this.currentDirection,
                             DirectionEnum.Down,
+                            this.fallingStraightDown,
                             this.gameBoardCollisionCheck,
                             this.onNewCentipedeGenerated);
 
