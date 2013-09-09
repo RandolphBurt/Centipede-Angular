@@ -3,29 +3,36 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
     return {
         initialise: function(canvas, graphicsFile) {
             GraphicsEngine.initialise(canvas, graphicsFile);
-            GameBoard.initialise();
 
             this.canvas = canvas;
 
-            this.bullets = [];
-            this.centipedes = [];
-            this.scoreMarkers = [];
             this.livesAnimationCount = 0;
 
             this.centipedeUpperBoundary = (GlobalSettings.gameBoardHeight - GlobalSettings.playerAreaHeight) + 1;
 
-            var me = this;
-
-            this.player = new Player(
-                Math.floor(GlobalSettings.gameBoardWidth / 2),
-                GlobalSettings.gameBoardHeight - 1,
-                function(x, y) { me.fireBullet(x, y)});
-
+            this.resetBoard();
             this.initialiseLevel();
+        },
+
+        resetBoard: function() {
+            GameBoard.initialise();
+            this.centipedes = [];
+            this.scoreMarkers = [];
+            this.flea = null;
+            this.spider = null;
+            this.snail = null;
         },
 
         initialiseLevel: function() {
             var me = this;
+
+            this.bullets = [];
+
+            this.player = new Player(
+                Math.floor(GlobalSettings.gameBoardWidth / 2),
+                GlobalSettings.gameBoardHeight - 1,
+                GlobalSettings.delayAfterDeathBeforePlayerRegeneration,
+                function(x, y) { me.fireBullet(x, y)});
 
             this.centipedes.push(new Centipede(
                 Math.floor(GlobalSettings.gameBoardWidth / 2),
@@ -45,6 +52,12 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
         },
 
         update: function(animation) {
+            if (this.shouldPlayerRegenerate()) {
+                this.resetBoard();
+                this.initialiseLevel();
+                return;
+            }
+
             this.moveBullets();
             this.moveFlea(animation);
             this.moveSpider(animation);
@@ -74,7 +87,7 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
         },
 
         checkPlayerCollision: function() {
-            if (this.player.playerState != CharacterState.Active) {
+            if (this.player.playerState != CharacterStateEnum.Active) {
                 return;
             }
 
@@ -95,6 +108,7 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
 
             if (playerDead) {
                 this.player.die();
+                GameState.die();
             }
         },
 
@@ -104,7 +118,7 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
             }
 
             var me = this;
-            this.bullets.push(new Bullet(x, y, function(x, y) { return me.checkBulletCollision(x, y)}));
+            this.bullets.push(new Bullet(x, y, GlobalSettings.delayAfterDeathBeforeBulletDispose, function(x, y) { return me.checkBulletCollision(x, y)}));
         },
 
         checkBulletCollision: function(x, y) {
@@ -334,6 +348,8 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
                 playerMove.direction = DirectionEnum.None;
             }
 
+            this.firePressed = playerMove.isFiring;
+
             this.player.move(playerMove.direction, playerMove.isFiring);
         },
 
@@ -344,7 +360,7 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
 
             for (var i = this.scoreMarkers.length - 1; i >= 0 ; i--) {
                 var score = this.scoreMarkers[i];
-                if (score.characterState === CharacterState.Dead) {
+                if (score.characterState === CharacterStateEnum.Dead) {
                     this.scoreMarkers.splice(i, 1);
                 } else {
                     score.move(animation);
@@ -355,7 +371,7 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
         moveCentipedes: function(animation) {
             for (var i = this.centipedes.length - 1; i >= 0; i--) {
                 var centipede = this.centipedes[i];
-                if (centipede.characterState === CharacterState.Dead) {
+                if (centipede.characterState === CharacterStateEnum.Dead) {
                     this.centipedes.splice(i, 1);
                     continue;
                 }
@@ -395,18 +411,15 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
         },
 
         moveBullets: function() {
-            var activeBullets = [];
-            for (var i = 0; i < this.bullets.length; i++) {
+            for (var i = this.bullets.length - 1; i >= 0; i--) {
                 var bullet = this.bullets[i];
 
-                bullet.move();
-
-                if (bullet.bulletState !== CharacterState.Dead) {
-                    activeBullets.push(bullet)
+                if (bullet.shouldDispose()) {
+                    this.bullets.splice(i, 1);
+                } else {
+                    bullet.move();
                 }
             }
-
-            this.bullets = activeBullets;
         },
 
         moveSpider: function(animation) {
@@ -440,7 +453,7 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
         },
 
         checkCreateSnail: function() {
-            if (this.snail !== undefined && this.snail !== null) {
+            if (this.snail) {
                 return;
             }
 
@@ -452,7 +465,7 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
         },
 
         checkCreateSpider: function() {
-            if (this.spider !== undefined && this.spider !== null) {
+            if (this.spider) {
                 return;
             }
 
@@ -465,7 +478,7 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
         },
 
         checkCreateFlea: function() {
-            if (this.flea !== undefined && this.flea !== null) {
+            if (this.flea) {
                 return;
             }
 
@@ -512,6 +525,10 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
             if (x < GlobalSettings.gameBoardWidth) {
                 GameBoard.poisonMushroom(x, y);
             }
+        },
+
+        shouldPlayerRegenerate: function() {
+            return this.firePressed && this.player.shouldRegenerate();
         }
     }
 });

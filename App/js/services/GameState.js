@@ -1,11 +1,11 @@
-gameApp.factory("GameState", function(GlobalSettings, GraphicsEngine) {
+gameApp.factory("GameState", function(GlobalSettings) {
     return {
         score: 0,
         highScore: 0,
         level: 1,
         lives: GlobalSettings.lives,
 
-        isAlive: function() {
+        isPlayerAlive: function() {
             return this.lives > 0;
         },
 

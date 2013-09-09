@@ -1,32 +1,44 @@
 "use strict";
-function Bullet(x, y, checkCollision) {
+function Bullet(x, y, delayAfterDeathBeforeBulletDispose, checkCollision) {
     this.x = x;
     this.y = y;
+    this.delayAfterDeathBeforeBulletDispose = delayAfterDeathBeforeBulletDispose;
     this.checkCollision = checkCollision;
-    this.bulletState = CharacterState.Alive;
+    this.bulletState = CharacterStateEnum.Active;
+    this.animationDeadCount = 0;
 
     if (this.checkCollision(x, y)) {
-        this.bulletState = CharacterState.ExplosionStart;
+        this.bulletState = CharacterStateEnum.Dead;
     };
 };
 
 Bullet.prototype.move = function() {
-    if (this.bulletState === CharacterState.Alive) {
+    if (this.bulletState === CharacterStateEnum.Active) {
         this.y--;
     }
 
-    if (this.y < 0 || this.bulletState === CharacterState.ExplosionEnd) {
-        this.bulletState = CharacterState.Dead;
-    } else if (this.bulletState === CharacterState.ExplosionStart) {
-        this.bulletState = CharacterState.ExplosionEnd;
-    } else if (this.checkCollision(this.x, this.y)) {
-        this.bulletState = CharacterState.ExplosionStart;
+    if (this.y < 0 || (this.bulletState === CharacterStateEnum.Active && this.checkCollision(this.x, this.y))) {
+        this.bulletState = CharacterStateEnum.Dead;
+    }
+
+    if (this.bulletState === CharacterStateEnum.Dead) {
+        this.animationDeadCount++;
+    }
+};
+
+Bullet.prototype.shouldDispose = function() {
+    if (this.y < 0) {
+        return true;
+    }
+
+    if (this.bulletState === CharacterStateEnum.Dead && this.animationDeadCount > this.delayAfterDeathBeforeBulletDispose) {
+        return true;
     }
 };
 
 Bullet.prototype.calculateAnimation = function() {
     return {
-        image: this.bulletState === CharacterState.Alive ? SpriteEnum.Bullet : SpriteEnum.Explosion,
+        image: this.bulletState === CharacterStateEnum.Active ? SpriteEnum.Bullet : SpriteEnum.Explosion,
         x: this.x,
         y: this.y
     };

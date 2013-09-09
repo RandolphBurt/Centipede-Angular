@@ -6,7 +6,7 @@ function ScoreMarker(x, y, score) {
     this.y = y;
     this.stopY = y - 1;
     this.dy = -0.125;
-    this.characterState = CharacterState.Active;
+    this.characterState = CharacterStateEnum.Active;
     this.colour = 'gold';
 };
 
@@ -22,7 +22,7 @@ ScoreMarker.prototype.move = function(animation) {
     }
 
     if (this.y === this.stopY) {
-        this.characterState = CharacterState.Dead;
+        this.characterState = CharacterStateEnum.Dead;
     }
 };
 

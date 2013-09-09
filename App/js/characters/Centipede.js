@@ -13,7 +13,7 @@ function Centipede(x, y, bodyLength, upBoundary, downBoundary, leftBoundary, rig
     this.framesPerMove = framesPerMove;
     this.gameBoardCollisionCheck = gameBoardCollisionCheck;
     this.onNewCentipedeGenerated = onNewCentipedeGenerated;
-    this.characterState = CharacterState.Alive;
+    this.characterState = CharacterStateEnum.Active;
 
     this.setPositionFromDirection();
 
@@ -168,7 +168,7 @@ Centipede.prototype.checkCollision = function(x, y, causeSplit) {
         if (this.x === x && this.y === y) {
             // we've hit the head of the centipede
             if (this.centipedeBody.length === 0) {
-                this.characterState = CharacterState.Dead;
+                this.characterState = CharacterStateEnum.Dead;
             } else {
                 // make the first part of the body the head - and then remove that body part
                 this.x = this.centipedeBody[0].x;

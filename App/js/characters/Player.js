@@ -1,29 +1,25 @@
-function Player(x, y, fireBullet) {
+function Player(x, y, delayAfterDeathBeforePlayerRegeneration, fireBullet) {
     this.x = x;
     this.y = y;
     this.prevX = x;
     this.prevY = y;
     this.dx = 0;
     this.dy = 0;
+    this.delayAfterDeathBeforePlayerRegeneration = delayAfterDeathBeforePlayerRegeneration;
     this.direction = DirectionEnum.None;
+    this.animationDeadCount = 0;
     this.isFiring = false;
-    this.playerState = CharacterState.Active;
+    this.playerState = CharacterStateEnum.Active;
     this.fireBullet = fireBullet;
 };
 
 Player.prototype.die = function() {
-    this.playerState = CharacterState.ExplosionStart;
+    this.playerState = CharacterStateEnum.Dead;
 };
 
 Player.prototype.move = function(direction, isFiring){
-    if (this.playerState != CharacterState.Active) {
-        switch (this.playerState) {
-            case CharacterState.ExplosionStart:
-                this.playerState = CharacterState.ExplosionEnd;
-                break;
-            case CharacterState.ExplosionEnd:
-                this.playerState = CharacterState.Dead;
-        }
+    if (this.playerState != CharacterStateEnum.Active) {
+        this.animationDeadCount++;
         return;
     }
 
@@ -68,12 +64,16 @@ Player.prototype.move = function(direction, isFiring){
     }
 };
 
+Player.prototype.shouldRegenerate = function() {
+    return this.playerState === CharacterStateEnum.Dead && this.animationDeadCount > this.delayAfterDeathBeforePlayerRegeneration;
+};
+
 Player.prototype.calculateAnimation = function(animation) {
     var destX;
     var destY;
     var spriteEnum;
 
-    if (this.playerState != CharacterState.Active) {
+    if (this.playerState != CharacterStateEnum.Active) {
         spriteEnum = SpriteEnum.Explosion;
         destX = this.x;
         destY = this.y;

@@ -36,6 +36,9 @@ gameApp.constant("GlobalSettings", {
     maxMushroomsAllowed: 140,
     minMushroomsInPlayerAreaBeforeFleaCreated: 5,
 
+    delayAfterDeathBeforePlayerRegeneration: 5,
+    delayAfterDeathBeforeBulletDispose: 2,
+
     fleaCreationChance: 100,
     spiderCreationChance: 25,
     snailCreationChance: 200,
