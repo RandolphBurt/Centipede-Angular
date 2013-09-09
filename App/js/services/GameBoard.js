@@ -38,11 +38,6 @@ gameApp.factory("GameBoard", function(GlobalSettings, Utils, GraphicsEngine, Gam
             }
         },
 
-        destroyMushroom: function(x, y) {
-            this.decrementMushroomCount(y);
-            this.map[y][x] = 0;
-        },
-
         incrementMushroomCount: function(y) {
             if (inPlayerArea(y, GlobalSettings.gameBoardHeight)) {
                 this.mushroomsInPlayerArea++;
