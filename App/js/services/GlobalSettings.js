@@ -47,6 +47,6 @@ gameApp.constant("GlobalSettings", {
     scoreHitPoisonMushroom: 25,
     scoreHitCentipede: 100,
     scoreHitSpider: 1000,
-    scoreHitFlea: 250,
-    scoreHitSnail: 500
+    scoreHitFlea: 500,
+    scoreHitSnail: 2000
 });
