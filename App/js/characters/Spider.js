@@ -61,7 +61,8 @@ Spider.prototype.calculateAnimation = function(animation) {
 };
 
 Spider.prototype.checkCollision = function(x, y) {
-    if ((this.x === x || this.x + 1 === x) && this.y === y) {
+    if ( ((this.x === x || this.x + 1 === x) && this.y === y) ||
+         ((this.prevX === x || this.prevX + 1 === x) && this.prevY === y)) {
         return true;
     }
 

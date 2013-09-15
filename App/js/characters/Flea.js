@@ -33,7 +33,7 @@ Flea.prototype.calculateAnimation = function(animation) {
 };
 
 Flea.prototype.checkCollision = function(x, y) {
-    if (this.x === x && this.y === y) {
+    if (this.x === x && (this.y === y  || this.prevY === y)) {
         return true;
     }
 
