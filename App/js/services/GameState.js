@@ -5,17 +5,45 @@ gameApp.factory("GameState", function(GlobalSettings) {
         level: 1,
         lives: GlobalSettings.lives,
         gameState: GameStateEnum.GameActive,
+        levelTransitionLineCount: 0,
 
-        isPlayerAlive: function() {
-            return this.lives > 0;
+        currentLevel: function() {
+            return this.level;
         },
 
         isGameOver: function() {
             return this.gameState === GameStateEnum.GameOver;
         },
 
+        isCurrentlyInLevelTransition: function() {
+            return this.gameState === GameStateEnum.LevelTransition;
+        },
+
+        hasLevelTransitionResetAllLines: function() {
+            return this.gameState === GameStateEnum.LevelTransition && this.levelTransitionLineCount >= GlobalSettings.gameBoardHeight;
+        },
+
         isCurrentLevelHighSpeed: function() {
             return this.level % 2 == 0;
+        },
+
+        levelTransitionCount: function() {
+            return this.levelTransitionLineCount;
+        },
+
+        incrementLevelTransitionLineCount: function() {
+            this.levelTransitionLineCount++;
+        },
+
+        startLevelTransition: function() {
+            this.gameState = GameStateEnum.LevelTransition;
+            this.levelTransitionLineCount = 0;
+            this.level++;
+        },
+
+        completeLevelTransition: function() {
+            this.gameState = GameStateEnum.GameActive;
+            this.levelTransitionLineCount = 0;
         },
 
         reset: function() {

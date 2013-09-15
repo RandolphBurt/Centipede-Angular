@@ -1,6 +1,6 @@
 gameApp.factory("GameBoard", function(GlobalSettings, Utils, GraphicsEngine, GameState) {
     return {
-        initialise: function() {
+        initialise: function () {
             this.map = [];
             this.mushroomsInPlayerArea = 0;
             this.mushroomsOnScreen = 0;
@@ -8,7 +8,7 @@ gameApp.factory("GameBoard", function(GlobalSettings, Utils, GraphicsEngine, Gam
             this.generateMushrooms();
         },
 
-        generateMushrooms: function() {
+        generateMushrooms: function () {
             for (var h = 0; h < GlobalSettings.gameBoardHeight; h++) {
                 this.map.push([]);
                 for (var w = 0; w < GlobalSettings.gameBoardWidth; w++) {
@@ -32,20 +32,20 @@ gameApp.factory("GameBoard", function(GlobalSettings, Utils, GraphicsEngine, Gam
             this.map[y][x] = 4;
         },
 
-        poisonMushroom: function(x, y) {
+        poisonMushroom: function (x, y) {
             if (this.map[y][x] > 0) {
                 this.map[y][x] *= -1;
             }
         },
 
-        destroyMushroom: function(x, y) {
+        destroyMushroom: function (x, y) {
             if (this.checkCollision(x, y) !== BoardLocationEnum.Space) {
                 this.decrementMushroomCount(y);
                 this.map[y][x] = BoardLocationEnum.Space;
             }
         },
 
-        incrementMushroomCount: function(y) {
+        incrementMushroomCount: function (y) {
             if (inPlayerArea(y, GlobalSettings.gameBoardHeight)) {
                 this.mushroomsInPlayerArea++;
             }
@@ -53,7 +53,7 @@ gameApp.factory("GameBoard", function(GlobalSettings, Utils, GraphicsEngine, Gam
             this.mushroomsOnScreen++;
         },
 
-        decrementMushroomCount: function(y) {
+        decrementMushroomCount: function (y) {
             if (inPlayerArea(y, GlobalSettings.gameBoardHeight)) {
                 this.mushroomsInPlayerArea--;
             }
@@ -61,7 +61,7 @@ gameApp.factory("GameBoard", function(GlobalSettings, Utils, GraphicsEngine, Gam
             this.mushroomsOnScreen--;
         },
 
-        playerAllowedToMove: function(currentX, currentY, direction) {
+        playerAllowedToMove: function (currentX, currentY, direction) {
             var x = currentX;
             var y = currentY;
 
@@ -87,7 +87,7 @@ gameApp.factory("GameBoard", function(GlobalSettings, Utils, GraphicsEngine, Gam
             return this.map[y][x] == 0;
         },
 
-        checkCollision: function(x, y, destroyLocation) {
+        checkCollision: function (x, y, destroyLocation) {
             var mushroomSpace = this.map[y][x];
 
             if (destroyLocation) {
@@ -110,7 +110,21 @@ gameApp.factory("GameBoard", function(GlobalSettings, Utils, GraphicsEngine, Gam
             }
         },
 
-        draw: function() {
+        draw: function () {
+            var incrementLevelTransitionCount = false;
+
+            if (GameState.isCurrentlyInLevelTransition()) {
+                incrementLevelTransitionCount = true;
+                var levelTransitionLineCount = GameState.levelTransitionCount();
+                for (var w = 0; w < GlobalSettings.gameBoardWidth; w++) {
+                    if (this.map[levelTransitionLineCount][w] < 0) {
+                        this.map[levelTransitionLineCount][w] = -4;
+                    } else if (this.map[levelTransitionLineCount][w] > 0) {
+                        this.map[levelTransitionLineCount][w] = 4;
+                    }
+                }
+            }
+
             for (var h = 0; h < GlobalSettings.gameBoardHeight; h++) {
                 for (var w = 0; w < GlobalSettings.gameBoardWidth; w++) {
                     var mushroomStrength = this.map[h][w];
@@ -118,14 +132,18 @@ gameApp.factory("GameBoard", function(GlobalSettings, Utils, GraphicsEngine, Gam
                         GraphicsEngine.drawImage(
                             GraphicsEngine.convertGameXCoordinateToPixels(w),
                             GraphicsEngine.convertGameYCoordinateToPixels(h),
-                            calculateImageType(mushroomStrength));
+                            calculateImageType(h, mushroomStrength));
                     }
                 }
             }
-        }
-    }
 
-    function calculateImageType(mushroomStrength) {
+            if (incrementLevelTransitionCount) {
+                GameState.incrementLevelTransitionLineCount();
+            }
+        }
+    };
+
+    function calculateImageType(yPosition, mushroomStrength) {
         var mushroomImage = 0;
 
         switch (mushroomStrength) {
@@ -155,14 +173,20 @@ gameApp.factory("GameBoard", function(GlobalSettings, Utils, GraphicsEngine, Gam
                 break;
         }
 
-        if (GameState.isCurrentLevelHighSpeed()) {
+        var isCurrentLevelHighSpeed = GameState.isCurrentLevelHighSpeed();
+
+        if (GameState.isCurrentlyInLevelTransition() && yPosition > GameState.levelTransitionCount()) {
+            isCurrentLevelHighSpeed = !isCurrentLevelHighSpeed;
+        }
+
+        if (isCurrentLevelHighSpeed) {
             mushroomImage += 8
         }
 
         return mushroomImage;
-    }
+    };
 
     function inPlayerArea(row, height) {
         return row > height - GlobalSettings.playerAreaHeight;
-    }
+    };
 });

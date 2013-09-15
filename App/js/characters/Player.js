@@ -17,6 +17,15 @@ Player.prototype.die = function() {
     this.playerState = CharacterStateEnum.Dead;
 };
 
+Player.prototype.regenerate = function() {
+    this.playerState = CharacterStateEnum.Active;
+    this.prevX = this.x;
+    this.prevY = this.y;
+    this.dx = 0;
+    this.dy = 0;
+    this.direction = DirectionEnum.None;
+};
+
 Player.prototype.move = function(direction, isFiring){
     if (this.playerState != CharacterStateEnum.Active) {
         this.animationDeadCount++;
@@ -66,6 +75,10 @@ Player.prototype.move = function(direction, isFiring){
 
 Player.prototype.shouldRegenerate = function() {
     return this.playerState === CharacterStateEnum.Dead && this.animationDeadCount > this.delayAfterDeathBeforePlayerRegeneration;
+};
+
+Player.prototype.isAlive = function() {
+    return this.playerState === CharacterStateEnum.Active;
 };
 
 Player.prototype.calculateAnimation = function(animation) {

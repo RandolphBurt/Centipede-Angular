@@ -10,6 +10,7 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
             this.centipedeUpperBoundary = (GlobalSettings.gameBoardHeight - GlobalSettings.playerAreaHeight) + 1;
 
             this.resetBoard();
+            this.createPlayer();
             this.initialiseLevel();
         },
 
@@ -22,16 +23,20 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
             this.snail = null;
         },
 
-        initialiseLevel: function() {
+        createPlayer: function() {
             var me = this;
-
-            this.bullets = [];
 
             this.player = new Player(
                 Math.floor(GlobalSettings.gameBoardWidth / 2),
                 GlobalSettings.gameBoardHeight - 1,
                 GlobalSettings.delayAfterDeathBeforePlayerRegeneration,
                 function(x, y) { me.fireBullet(x, y)});
+        },
+
+        initialiseLevel: function() {
+            var me = this;
+
+            this.bullets = [];
 
             this.centipedes.push(new Centipede(
                 Math.floor(GlobalSettings.gameBoardWidth / 2),
@@ -41,40 +46,61 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
                 GlobalSettings.gameBoardHeight - 1,
                 0,
                 GlobalSettings.gameBoardWidth - 1,
-                GameState.isCurrentLevelHighSpeed() ? GlobalSettings.centipedeFramesPerMoveHighSpeed: GlobalSettings.centipedeFramesPerMoveNormalSpeed,
+                GlobalSettings.centipedeFramesPerMoveNormalSpeed,
                 DirectionEnum.Down,
                 DirectionEnum.Right,
                 false,
                 this.gameBoardCollisionCheck,
                 function(centipede) { me.generateNewCentipede(centipede)}
             ));
+
+            for (var i = 1; i < GameState.currentLevel() && i < GlobalSettings.maxCentipedes; i++)
+            {
+                this.centipedes.push(new Centipede(
+                    (i * 2) - 1,
+                    1,
+                    0,
+                    this.centipedeUpperBoundary,
+                    GlobalSettings.gameBoardHeight - 1,
+                    0,
+                    GlobalSettings.gameBoardWidth - 1,
+                    GameState.isCurrentLevelHighSpeed() ? GlobalSettings.centipedeFramesPerMoveHighSpeed: GlobalSettings.centipedeFramesPerMoveNormalSpeed,
+                    DirectionEnum.Down,
+                    DirectionEnum.Right,
+                    false,
+                    this.gameBoardCollisionCheck,
+                    function(centipede) { me.generateNewCentipede(centipede)}
+                    ));
+            }
         },
 
         update: function(animation) {
             if (this.shouldPlayerRegenerate()) {
-                if (GameState.isGameOver()) {
-                    GameState.reset();
-                }
-                this.resetBoard();
-                this.initialiseLevel();
+                this.resetAfterPlayerRegeneration();
                 return;
             }
 
-            this.moveBullets();
-            this.moveFlea(animation);
-            this.moveSpider(animation);
-            this.moveSnail(animation);
-            this.moveCentipedes(animation);
-            this.movePlayer(animation);
-            this.moveScoreMarkers(animation);
+            this.checkLevelJustCompleted();
 
-            if (animation == 0) {
-                this.checkCreateFlea();
-                this.checkCreateSpider();
-                this.checkCreateSnail();
+            if (GameState.isCurrentlyInLevelTransition()) {
+                this.checkLevelTransitionComplete();
+            } else {
+                this.moveBullets();
+                this.moveFlea(animation);
+                this.moveSpider(animation);
+                this.moveSnail(animation);
+                this.moveCentipedes(animation);
+                this.movePlayer(animation);
+                this.moveScoreMarkers(animation);
+
+                if (animation == 0) {
+                    this.checkCreateFlea();
+                    this.checkCreateSpider();
+                    this.checkCreateSnail();
+                }
+
+                this.checkPlayerCollision();
             }
-
-            this.checkPlayerCollision();
 
             this.blankScreen();
             this.drawScoreBoard(animation);
@@ -87,6 +113,33 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
             this.drawBullets();
             this.drawScoreMarkers();
             this.drawGameState();
+        },
+
+        checkLevelTransitionComplete: function() {
+            if (GameState.hasLevelTransitionResetAllLines()) {
+                this.initialiseLevel();
+                GameState.completeLevelTransition();
+            }
+        },
+
+        checkLevelJustCompleted: function() {
+            if (this.player.isAlive() && !GameState.isCurrentlyInLevelTransition() && this.centipedes.length === 0) {
+                GameState.startLevelTransition();
+                this.player.regenerate();
+                this.bullets = [];
+                this.spider = null;
+                this.flea = null;
+                this.snail = null;
+            }
+        },
+
+        resetAfterPlayerRegeneration: function() {
+            if (GameState.isGameOver()) {
+                GameState.reset();
+            }
+            this.resetBoard();
+            this.player.regenerate();
+            this.initialiseLevel();
         },
 
         checkPlayerCollision: function() {
@@ -411,7 +464,7 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
                             GlobalSettings.gameBoardHeight - 1,
                             0,
                             GlobalSettings.gameBoardWidth - 1,
-                            GlobalSettings.centipedeFramesPerMoveNormalSpeed,
+                            GlobalSettings.centipedeFramesPerMoveHighSpeed,
                             DirectionEnum.Down,
                             DirectionEnum.Right,
                             false,
