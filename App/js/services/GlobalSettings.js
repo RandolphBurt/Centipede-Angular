@@ -42,6 +42,7 @@ gameApp.constant("GlobalSettings", {
     minMushroomsInPlayerAreaBeforeFleaCreated: 5,
 
     maxCentipedes: 9,
+    centipedeMinimumLength: 10,
 
     delayAfterDeathBeforePlayerRegeneration: 5,
     delayAfterDeathBeforeBulletDispose: 2,

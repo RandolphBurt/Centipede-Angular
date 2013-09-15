@@ -41,7 +41,7 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
             this.centipedes.push(new Centipede(
                 Math.floor(GlobalSettings.gameBoardWidth / 2),
                 0,
-                10,
+                GlobalSettings.centipedeMinimumLength + GameState.currentLevel(),
                 this.centipedeUpperBoundary,
                 GlobalSettings.gameBoardHeight - 1,
                 0,
