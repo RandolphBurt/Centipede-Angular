@@ -19,7 +19,12 @@ gameApp.constant("GlobalSettings", {
     scoreBoardTitleYPosition: 15,
     scoreBoardContentYPosition: 35,
     scoreBoardLivesYPosition: 20,
-    scoreBoardLivesOffset: 20,
+    scoreBoardLivesOffset: 15,
+
+    gameOverXPosition: 210,
+    gameOverYPosition: 300,
+    gameOverFontColour: "yellow",
+    gameOverFont: "32px Arial bold",
 
     gameBoardWidth: 30,
     gameBoardHeight: 30,

@@ -4,9 +4,14 @@ gameApp.factory("GameState", function(GlobalSettings) {
         highScore: 0,
         level: 1,
         lives: GlobalSettings.lives,
+        gameState: GameStateEnum.GameActive,
 
         isPlayerAlive: function() {
             return this.lives > 0;
+        },
+
+        isGameOver: function() {
+            return this.gameState === GameStateEnum.GameOver;
         },
 
         isCurrentLevelHighSpeed: function() {
@@ -17,6 +22,7 @@ gameApp.factory("GameState", function(GlobalSettings) {
             this.lives = GlobalSettings.lives;
             this.level = 1;
             this.score = 0;
+            this.gameState = GameStateEnum.GameActive;
         },
 
         incrementScore: function(increment) {
@@ -30,6 +36,10 @@ gameApp.factory("GameState", function(GlobalSettings) {
         die: function() {
             if (this.lives > 0) {
                 this.lives--;
+            }
+
+            if (this.lives === 0) {
+                this.gameState = GameStateEnum.GameOver;
             }
         }
     }

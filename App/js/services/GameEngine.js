@@ -7,7 +7,6 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
             this.canvas = canvas;
 
             this.livesAnimationCount = 0;
-
             this.centipedeUpperBoundary = (GlobalSettings.gameBoardHeight - GlobalSettings.playerAreaHeight) + 1;
 
             this.resetBoard();
@@ -53,6 +52,9 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
 
         update: function(animation) {
             if (this.shouldPlayerRegenerate()) {
+                if (GameState.isGameOver()) {
+                    GameState.reset();
+                }
                 this.resetBoard();
                 this.initialiseLevel();
                 return;
@@ -84,6 +86,7 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
             this.drawCentipedes(animation);
             this.drawBullets();
             this.drawScoreMarkers();
+            this.drawGameState();
         },
 
         checkPlayerCollision: function() {
@@ -180,6 +183,17 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
             GraphicsEngine.blankScreen();
         },
 
+        drawGameState: function() {
+            if (GameState.isGameOver()) {
+                GraphicsEngine.drawText(
+                    GlobalSettings.gameOverXPosition,
+                    GlobalSettings.gameOverYPosition,
+                    "Game Over",
+                    GlobalSettings.gameOverFontColour,
+                    GlobalSettings.gameOverFont);
+            }
+        },
+
         drawScoreBoard: function(animation) {
             if (animation == 0) {
                 this.livesAnimationCount++;
@@ -193,7 +207,6 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
             if (this.livesAnimationCount > 4) {
                 animationOffset = 9 - this.livesAnimationCount;
             }
-
 
             GraphicsEngine.drawText(
                 GlobalSettings.scoreBoardLivesXPositionText,
@@ -244,7 +257,7 @@ gameApp.factory('GameEngine', function(GraphicsEngine, GameBoard, GlobalSettings
                 GlobalSettings.scoreBoardContentFontColour,
                 GlobalSettings.scoreBoardFont);
 
-            for (var i = 0; i < GameState.lives - 1; i++) {
+            for (var i = 0; i < GameState.lives; i++) {
                 GraphicsEngine.drawImage(
                     GlobalSettings.scoreBoardLivesXPositionImage + (GlobalSettings.scoreBoardLivesOffset * i) + (animationOffset * 4),
                     GlobalSettings.scoreBoardLivesYPosition,
