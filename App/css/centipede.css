@@ -1,4 +1,4 @@
-﻿html, body {
+﻿﻿html, body {
     height: 100%;
     margin: 0;
     padding: 0;
@@ -10,6 +10,7 @@ body {
     -ms-flex-direction: column;
     -ms-flex-pack: center;
     display: -ms-flexbox;
+    cursor: none;
 }
 
 .fixedlayout {
