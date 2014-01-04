@@ -1,2 +1,7 @@
 # WebStorm
 .idea/
+
+# Visual Studio files
+App/bin/
+App/bld/
+*.suo
