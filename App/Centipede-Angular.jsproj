@@ -50,7 +50,7 @@
     <PackageCertificateKeyFile>Centipede-Angular_TemporaryKey.pfx</PackageCertificateKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="css\default.css" />
+    <Content Include="css\centipede.css" />
     <Content Include="default.html" />
     <Content Include="images\graphics.png" />
     <Content Include="images\logo.png" />
