@@ -1,10 +1,19 @@
 <!DOCTYPE html>
 <html lang="en" ng-app="gameApp">
 <head>
+    <link rel="stylesheet" type="text/css" href="App/css/centipede.css">
     <title>Centipede</title>
 </head>
 <body ng-controller="AppController" ng-keydown="keydown($event)" ng-keyup="keyup($event)"  style="background-color:darkgrey">
-    <div game-engine/>
+    <div data-ng-if="!instructionsDisplayed" class="instructions">
+        <h2>Instructions</h2>
+        <p>Shoot everything and stay alive</p>
+        <p>Arrow Keys to move</p>
+        <p>Space bar to fire</p>
+        <br>
+        <p>Press any key to start</p>
+    </div>
+    <div data-ng-if="instructionsDisplayed" game-engine/>
 
     <script src="App/lib/angular.min.js"></script>
     <script src="App/gameApp.js"></script>

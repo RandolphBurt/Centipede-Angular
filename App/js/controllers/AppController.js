@@ -3,6 +3,11 @@
 gameApp.controller('AppController', function($scope, KeyPressHandler) {
 
     $scope.keydown = function(keyEvent) {
+        if (!$scope.instructionsDisplayed) {
+            $scope.instructionsDisplayed = true;
+            return;
+        }
+
         KeyPressHandler.keyPress(keyEvent.keyCode);
      };
 
