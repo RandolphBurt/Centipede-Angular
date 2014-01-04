@@ -77,7 +77,6 @@
     <Content Include="js\services\GameBoard.js" />
     <Content Include="js\services\GameEngine.js" />
     <Content Include="js\services\GameState.js" />
-    <Content Include="js\services\KeyPressHandler.js" />
     <Content Include="js\services\Utils.js" />
     <Content Include="js\SpriteEnum.js" />
     <Content Include="lib\angular.min.js" />
