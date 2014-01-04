@@ -31,3 +31,7 @@ body {
 
 @media screen and (-ms-view-state: fullscreen-portrait) {
 }
+
+.instructions {
+    text-align: center;
+}

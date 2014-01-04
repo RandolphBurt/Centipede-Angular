@@ -48,8 +48,18 @@
 <body ng-controller="AppController" ng-keydown="keydown($event)" ng-keyup="keyup($event)">
     <div data-win-control="WinJS.UI.ViewBox">
         <div class="fixedlayout">
-            <div game-engine>
+            <div data-ng-if="!instructionsDisplayed" class="instructions">
+                <br>
+                <br>
+                <br>
+                <h2>Instructions</h2>
+                <p>Shoot everything and stay alive</p>
+                <p>Arrow Keys to move</p>
+                <p>Space bar to fire</p>
+                <br>
+                <p>Press any key to start</p>
             </div>
+            <div data-ng-if="instructionsDisplayed" game-engine/>
         </div>
     </div>
 </body>
