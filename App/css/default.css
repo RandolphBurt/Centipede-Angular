@@ -16,8 +16,8 @@ body {
     -ms-grid-columns: 1fr;
     -ms-grid-rows: 1fr;
     display: -ms-grid;
-    height: 640px;
-    width: 600px;
+    height: 650px;
+    width: 610px;
 }
 
 @media screen and (-ms-view-state: fullscreen-landscape) {
