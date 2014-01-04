@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" ng-app="gameApp">
 <head>
-    <link rel="stylesheet" type="text/css" href="App/css/centipede.css">
     <title>Centipede</title>
 </head>
 <body ng-controller="appController" ng-keydown="keydown($event)" ng-keyup="keyup($event)"  style="background-color:darkgrey">
@@ -16,7 +15,7 @@
     <div data-ng-if="instructionsDisplayed" centipede-game/>
 
     <script src="App/lib/angular.min.js"></script>
-    <script src="App/gameApp.js"></script>
+    <script src="App/js/gameApp.js"></script>
     <script src="App/js/constants/global-settings.js"></script>
     <script src="App/js/constants/character-state.js"></script>
     <script src="App/js/constants/character-direction.js"></script>
