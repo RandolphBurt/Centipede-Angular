@@ -1,3 +1,1 @@
-'use strict';
-
-var gameApp = angular.module('gameApp', []);
+angular.module("gameApp", []);
