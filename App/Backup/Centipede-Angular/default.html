@@ -1,0 +1,67 @@
+﻿<!DOCTYPE html>
+<html ng-app="gameApp">
+<head>
+    <meta charset="utf-8" />
+    <title>Centipede_Angular</title>
+
+    <!-- WinJS references -->
+    <link href="//Microsoft.WinJS.1.0/css/ui-dark.css" rel="stylesheet" />
+    <script src="//Microsoft.WinJS.1.0/js/base.js"></script>
+    <script src="//Microsoft.WinJS.1.0/js/ui.js"></script>
+    
+    <!-- Centipede_Angular references -->
+    <link href="/css/centipede.css" rel="stylesheet" />
+
+    <script src="/lib/jquery-1.8.2-win8-1.0.min.js"></script>
+        <script type="text/javascript">
+            jQuery.isUnsafe = true;
+    </script>    
+
+    <script src="/lib/angular.min.js"></script>
+
+    <script src="/js/default.js"></script>
+    <script src="/js/gameApp.js"></script>
+    <script src="/js/CharacterStateEnum.js"></script>
+    <script src="/js/GameStateEnum.js"></script>
+    <script src="/js/BoardLocationEnum.js"></script>
+    <script src="/js/DirectionEnum.js"></script>
+    <script src="/js/SpriteEnum.js"></script>
+    <script src="/js/characters/ScoreMarker.js"></script>
+    <script src="/js/characters/Player.js"></script>
+    <script src="/js/characters/Bullet.js"></script>
+    <script src="/js/characters/Centipede.js"></script>
+    <script src="/js/characters/CentipedeBody.js"></script>
+    <script src="/js/characters/Flea.js"></script>
+    <script src="/js/characters/Spider.js"></script>
+    <script src="/js/characters/Snail.js"></script>
+    <script src="/js/services/GlobalSettings.js"></script>
+    <script src="/js/services/Utils.js"></script>
+    <script src="/js/services/LocalStorage.js"></script>
+    <script src="/js/services/KeyPressHandler.js"></script>
+    <script src="/js/services/GraphicsEngine.js"></script>
+    <script src="/js/services/GameBoard.js"></script>
+    <script src="/js/services/GameEngine.js"></script>
+    <script src="/js/directives/GameEngineDirective.js"></script>
+    <script src="/js/controllers/AppController.js"></script>
+    <script src="/js/services/GameState.js"></script>
+
+</head>
+<body ng-controller="AppController" ng-keydown="keydown($event)" ng-keyup="keyup($event)">
+    <div data-win-control="WinJS.UI.ViewBox">
+        <div class="fixedlayout">
+            <div data-ng-if="!instructionsDisplayed" class="instructions">
+                <br>
+                <br>
+                <br>
+                <h2>Instructions</h2>
+                <p>Shoot everything and stay alive</p>
+                <p>Arrow Keys to move</p>
+                <p>Space bar to fire</p>
+                <br>
+                <p>Press any key to start</p>
+            </div>
+            <div data-ng-if="instructionsDisplayed" game-engine/>
+        </div>
+    </div>
+</body>
+</html>

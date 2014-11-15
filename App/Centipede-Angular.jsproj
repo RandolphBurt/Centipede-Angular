@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|AnyCPU">
       <Configuration>Debug</Configuration>
@@ -37,15 +37,18 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>a69fcec2-587a-466d-8cf3-30dde8ca08cf</ProjectGuid>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '11.0'">
-    <VisualStudioVersion>11.0</VisualStudioVersion>
+  <PropertyGroup Label="Configuration">
+    <MinimumVisualStudioVersion>12.0</MinimumVisualStudioVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0'">
+    <VisualStudioVersion>12.0</VisualStudioVersion>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\$(WMSJSProjectDirectory)\Microsoft.VisualStudio.$(WMSJSProject).Default.props" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\$(WMSJSProjectDirectory)\Microsoft.VisualStudio.$(WMSJSProject).props" />
   <PropertyGroup>
     <TargetPlatformIdentifier>Windows</TargetPlatformIdentifier>
-    <TargetPlatformVersion>8.0</TargetPlatformVersion>
+    <TargetPlatformVersion>8.1</TargetPlatformVersion>
     <DefaultLanguage>en-US</DefaultLanguage>
     <PackageCertificateKeyFile>Centipede-Angular_TemporaryKey.pfx</PackageCertificateKeyFile>
   </PropertyGroup>
@@ -60,31 +63,36 @@
     <AppxManifest Include="package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
-    <Content Include="js\BoardLocationEnum.js" />
-    <Content Include="js\CharacterStateEnum.js" />
-    <Content Include="js\characters\Bullet.js" />
-    <Content Include="js\characters\Centipede.js" />
-    <Content Include="js\characters\CentipedeBody.js" />
-    <Content Include="js\characters\Flea.js" />
-    <Content Include="js\characters\Player.js" />
-    <Content Include="js\characters\ScoreMarker.js" />
-    <Content Include="js\characters\Snail.js" />
-    <Content Include="js\characters\Spider.js" />
+    <Content Include="js\constants\board-location.js" />
+    <Content Include="js\constants\character-direction.js" />
+    <Content Include="js\constants\character-state.js" />
+    <Content Include="js\constants\coordinate-system.js" />
+    <Content Include="js\constants\game-state.js" />
+    <Content Include="js\constants\global-settings.js" />
+    <Content Include="js\constants\sprite.js" />
     <Content Include="js\default.js" />
-    <Content Include="js\DirectionEnum.js" />
     <Content Include="js\gameApp.js" />
-    <Content Include="js\GameStateEnum.js" />
-    <Content Include="js\services\GameBoard.js" />
-    <Content Include="js\services\GameEngine.js" />
-    <Content Include="js\services\LocalStorage.js" />
-    <Content Include="js\services\Utils.js" />
-    <Content Include="js\SpriteEnum.js" />
+    <Content Include="js\services\bullet.js" />
+    <Content Include="js\services\centipede.js" />
+    <Content Include="js\services\flea.js" />
+    <Content Include="js\services\game-board.js" />
+    <Content Include="js\services\game-state.js" />
+    <Content Include="js\services\game.js" />
+    <Content Include="js\services\graphics-engine.js" />
+    <Content Include="js\services\key-press-handler.js" />
+    <Content Include="js\services\local-storage.js" />
+    <Content Include="js\services\player.js" />
+    <Content Include="js\services\render.js" />
+    <Content Include="js\services\score-marker.js" />
+    <Content Include="js\services\snail.js" />
+    <Content Include="js\services\spider.js" />
+    <Content Include="js\services\utils.js" />
     <Content Include="lib\angular.min.js" />
     <Content Include="lib\jquery-1.8.2-win8-1.0.min.js" />
     <None Include="Centipede-Angular_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
-    <SDKReference Include="Microsoft.WinJS.1.0, Version=1.0" />
+    <SDKReference Include="Microsoft.WinJS.2.0, Version=1.0" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\$(WMSJSProjectDirectory)\Microsoft.VisualStudio.$(WMSJSProject).targets" />
   <!-- To modify your build process, add your task inside one of the targets below then uncomment

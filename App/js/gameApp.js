@@ -25,7 +25,7 @@ angular.module("gameApp", [])
                 var animation = 0;
                 var canvas = element.find('canvas')[0].getContext("2d");
 
-                graphicsEngineService.initialise(canvas, 'App/img/graphics.png');
+                graphicsEngineService.initialise(canvas, 'images/graphics.png');
                 gameService.initialise();
 
                 function gameLoop() {
