@@ -12,10 +12,8 @@
     <!-- Centipede_Angular references -->
     <link href="/css/centipede.css" rel="stylesheet" />
 
-    <script src="/lib/jquery-1.8.2-win8-1.0.min.js"></script>
-        <script type="text/javascript">
-            jQuery.isUnsafe = true;
-    </script>    
+    <!-- Required to allow AngularJS to work in win store apps see https://github.com/MsopenTech/winstore-jscompat -->
+    <script src="/lib/winstore-jscompat.js"></script>
 
     <script src="/lib/angular.min.js"></script>
 
@@ -57,7 +55,9 @@
                 <p>Arrow Keys to move</p>
                 <p>Space bar to fire</p>
                 <br>
-                <p>Press any key to start</p>
+                <p>CLICK TO GET FOCUS</p>
+                <br>
+                <p>Then press any key to start</p>
             </div>
             <div data-ng-if="instructionsDisplayed" centipede-game/>
         </div>

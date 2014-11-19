@@ -89,6 +89,7 @@
     <Content Include="js\services\utils.js" />
     <Content Include="lib\angular.min.js" />
     <Content Include="lib\jquery-1.8.2-win8-1.0.min.js" />
+    <Content Include="lib\winstore-jscompat.js" />
     <None Include="Centipede-Angular_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>

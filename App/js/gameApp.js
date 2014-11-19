@@ -18,12 +18,14 @@ angular.module("gameApp", [])
     .directive("centipedeGame", ["$interval", "gameService", "renderService", "graphicsEngineService", function($interval, gameService, renderService, graphicsEngineService) {
         return {
             restrict: 'A',
-            template: '<canvas id="gameCanvas" width="600" height="640" style="border:1px solid #000000;"></canvas>',
+            template: '<canvas id="gameCanvas" tabindex="1" width="600" height="640" style="border:1px solid #000000;"></canvas>',
 
             link: function(scope, element) {
                 var intervalPromise;
                 var animation = 0;
                 var canvas = element.find('canvas')[0].getContext("2d");
+
+                document.getElementById('gameCanvas').focus();
 
                 graphicsEngineService.initialise(canvas, 'images/graphics.png');
                 gameService.initialise();
